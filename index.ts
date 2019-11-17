@@ -2,16 +2,16 @@
 /* Welcome to ... the game server ..., dun dun dun */
 // ##############
 
-import GameServer from './src/GameServer'
-import GameManager from './src/GameManager'
-import UserManager from './src/UserManager';
-import LightShow from './src/LightShow';
+import GameServer from './server/GameServer'
+import GameManager from './server/GameManager'
+import UserManager from './server/UserManager';
+import LightShow from './server/LightShow';
 
 // Register Games
-import Wand from './src/games/Wand'
-import Pong from './src/games/Pong';
+import Wand from './server/games/Wand'
+import Pong from './server/games/Pong';
 
-import AdminPortal from './src/admin/Admin';
+import AdminPortal from './server/admin/Admin';
 
 const WAND: string = 'WAND';
 GameManager.registerGame(new Wand(), WAND);
