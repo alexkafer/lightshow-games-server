@@ -3,10 +3,5 @@
         "odometry",
         "raycaster",
         "raytracer"
-    ],
-    "appService.zipIgnorePattern": [
-        "node_modules{,/**}",
-        ".vscode{,/**}"
-    ],
-    "appService.defaultWebAppToDeploy": "/subscriptions/05b44edd-1a7d-4035-81a9-db07bba85a7f/resourceGroups/appsvc_linux_centralus/providers/Microsoft.Web/sites/rhabdomancer"
+    ]
 }
