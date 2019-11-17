@@ -2,7 +2,7 @@
 /* Welcome to ... the game server ..., dun dun dun */
 // ##############
 import LightShow from './src/scene/LightShow';
-import GameServer from './src/GameServer'; 
+import GameServer from './src/GameServer';
 import GameManager from './src/GameManager';
 import UserManager from './src/UserManager';
 
