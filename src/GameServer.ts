@@ -1,66 +1,31 @@
-import express from 'express';
-import { Express, NextFunction, Request, Response } from 'express'
+import express, { Express } from 'express'
 import { createServer, Server } from 'http';
-import SocketIO from "socket.io";
-
-import UserManager from './UserManager';
-import LightShow from './scene/LightShow';
-
-import AdminRouter from './admin/Admin';
 
 export default class GameServer {
-    private app?: Express
+    private app: Express
     private httpServer?: Server
-    private gallium: SocketIO.Server;
-    private io: SocketIO.Server;
 
-    constructor(private userManager: UserManager, private lightShow: LightShow) {
+    constructor() {
        this.app = express();
 
         // initialize a simple  server
         this.httpServer = createServer(this.app);
 
-        this.gallium = SocketIO(this.httpServer, {
-            path: '/gallium'
-        });
-
-        lightShow.connect(this.gallium);
-
-        this.io = SocketIO(this.httpServer);
-
         this.app.use(express.static('static'));
+        this.app.use(express.json());
+    }
 
-        // middleware
-        this.gallium.use((socket, next) => {
-            const token = socket.handshake.query.token;
-            if (token === "lightshow2") {
-                return next();
-            }
-            return next(new Error('authentication error'));
-        });
+    public getHTTPServer() {
+        return this.httpServer;
+    }
 
-        this.app.set('view engine', 'pug')
-        this.app.set('views', './src/admin/views')
-        this.app.use('/admin', AdminRouter);
-
-        this.io.on('connection', this.userConnection.bind(this));
+    public getExpressApp() {
+        return this.app;
     }
 
     public start(port: number) {
         this.httpServer.listen(port, () => {
             console.log(`Game Server started on port ${port}`);
-        });
-    }
-
-    private userConnection(socket: any) {
-        console.log('a user connected');
-        socket.join('users');
-
-        this.userManager.addUser(socket);
-
-        socket.on('disconnect', () => {
-            console.log('user disconnected');
-            this.userManager.disconnectUser(socket);
         });
     }
 }

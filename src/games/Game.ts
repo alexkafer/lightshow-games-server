@@ -1,18 +1,18 @@
-import GameManager from '../GameManager'
-import User from '../utils/User'
-
 import { LinkedList } from 'linked-list-typescript';
+
+import User from '../utils/User'
+import LightShow from '../LightShow';
 
 export default abstract class Game {
     public title: string;
     public listenFor: string[];
 
-
-    protected gameManager: GameManager
+    protected lightShow: LightShow;
     protected players: LinkedList<User>;
 
     private maxPlayers: number;
 
+    abstract setup() : void;
     abstract loop() : void;
     abstract shutdown() : void;
     abstract action(user: User, message: string, payload: any) : void;
@@ -24,8 +24,9 @@ export default abstract class Game {
         this.players = new LinkedList<User>();
     }
 
-    public initialize(gameManager: GameManager) {
-        this.gameManager = gameManager;
+    public initialize(lightShow: LightShow) {
+        this.lightShow = lightShow;
+        this.setup()
     }
 
     public addPlayer(user: User): boolean {

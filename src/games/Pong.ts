@@ -8,14 +8,18 @@ export default class Pong extends Game {
         super("Pong", ['ping']);
     }
 
+    setup(): void {
+        console.log("Starting pong");
+    }
+
     loop(): void {
-        throw new Error("Method not implemented.");
+        console.log("Loop pong");
     }
     shutdown(): void {
-        throw new Error("Method not implemented.");
+        console.log("Shutting down pong");
     }
 
     action(user: User, message: string, payload: any): void {
-        throw new Error("Method not implemented.");
+        console.log("Pong action!", message, payload);
     }
 }

@@ -9,20 +9,24 @@ export default class Wand extends Game {
         super("Wand", ["odometry"]);
     }
 
+    setup() {
+        console.log("Starting Wand");
+    }
+
     loop() {
-        console.log("Loop");
+        console.log("Loop wand");
     };
 
     shutdown() {
-        console.log("Shutdown");
+        console.log("Shutdown wand");
     }
 
     action(player: User, message: string, payload: any) {
         if (message === "odometry") {
             if (payload.alpha > 180) {
-                this.gameManager.show.allOn();
+                this.lightShow.allOn();
             } else {
-                this.gameManager.show.allOff();
+                this.lightShow.allOff();
             }
         }
     }

@@ -1,9 +1,34 @@
-import express from 'express';
+import { Express, Router } from 'express';
+import GameManager from '../GameManager';
 
-const adminRouter = express.Router();
+export default class AdminPortal {
+    private gameManager: GameManager;
+    private router: Router;
 
-adminRouter.get('/',  (req, res) => {
-    res.render('index', { title: 'Hey', message: 'Hello there!' })
-  })
+    constructor(gameManager: GameManager) {
+        this.gameManager = gameManager;
 
-export default adminRouter;
+        this.router = Router();
+        this.setupRouter();
+    }
+
+    private setupRouter() {
+        this.router.get('/game',  (req, res) => {
+            res.json({
+                "success": true,
+                "current": this.gameManager.getCurrentGame(),
+                "registered": GameManager.listGames()
+            });
+        })
+
+        this.router.post('/game',  (req, res) => {
+            const newGame = req.body.game;
+            this.gameManager.startGame(newGame);
+            res.sendStatus(200);
+        })
+    }
+
+    public initRoutes(app: Express) {
+        app.use('/admin', this.router);
+    }
+}
