@@ -23,9 +23,8 @@ export default class GameManager {
     private playerQueue: Queue<User>;
 
     private gameServer: GameServer
-    private adminPortal: AdminPortal;
 
-    constructor(private um: UserManager, private ls: LightShow) {
+    constructor(um: UserManager, private ls: LightShow) {
         this.playerQueue = new Queue<User>();
 
         um.on('userJoined', this.onNewUser.bind(this));
