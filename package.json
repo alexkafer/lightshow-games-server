@@ -17,6 +17,7 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.17.1",
+    "pug": "^2.0.4",
     "queue-typescript": "^1.0.1",
     "socket.io": "^2.3.0",
     "three": "^0.110.0"

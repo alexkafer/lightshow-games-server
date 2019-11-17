@@ -7,9 +7,9 @@ import { Queue } from 'queue-typescript';
 
 export default class GameManager implements IUserDelegate  {
 
-    private games: Map<string, Game>;
-    public registerGame(game: Game, identifer: string) {
-        this.games.set(identifer, game);
+    private static GAMES: Map<string, Game> = new Map<string, Game>();;
+    public static registerGame(game: Game, identifer: string) {
+        GameManager.GAMES.set(identifer, game);
 
     }
 
@@ -20,19 +20,17 @@ export default class GameManager implements IUserDelegate  {
     constructor(show: LightShow) {
         this.show = show;
         this.playerQueue = new Queue<User>();
-
-        this.games = new Map<string, Game>();
     }
 
     public startGame(newGame: string) {
-        if (this.games.has(newGame)) {
+        if (GameManager.GAMES.has(newGame)) {
             // Turn off previous game, if it exists
             if (this.currentGame) {
                 this.currentGame.shutdown();
             }
 
             // Update the current game, and set it up
-            this.currentGame = this.games.get(newGame);
+            this.currentGame = GameManager.GAMES.get(newGame);
             this.currentGame.initialize(this);
         } else {
             console.error(newGame + " is not a registered game. Please fix or register the game.")

@@ -6,6 +6,8 @@ import SocketIO from "socket.io";
 import UserManager from './UserManager';
 import LightShow from './scene/LightShow';
 
+import AdminRouter from './admin/Admin';
+
 export default class GameServer {
     private app?: Express
     private httpServer?: Server
@@ -37,7 +39,9 @@ export default class GameServer {
             return next(new Error('authentication error'));
         });
 
-        this.configureApiEndpoints(this.app);
+        this.app.set('view engine', 'pug')
+        this.app.set('views', './src/admin/views')
+        this.app.use('/admin', AdminRouter);
 
         this.io.on('connection', this.userConnection.bind(this));
     }
@@ -58,9 +62,5 @@ export default class GameServer {
             console.log('user disconnected');
             this.userManager.disconnectUser(socket);
         });
-    }
-
-    private configureApiEndpoints(server: Express) {
-        // server.get('/scene', this.getCurrentScene)
     }
 }
