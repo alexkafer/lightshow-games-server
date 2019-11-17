@@ -1,13 +1,13 @@
 // ##############
 /* Welcome to ... the game server ..., dun dun dun */
 // ##############
-import LightShow from './scene/LightShow';
-import GameServer from './GameServer'; 
-import GameManager from './GameManager';
-import UserManager from './UserManager';
+import LightShow from './src/scene/LightShow';
+import GameServer from './src/GameServer'; 
+import GameManager from './src/GameManager';
+import UserManager from './src/UserManager';
 
 // Register Games
-import Wand from './games/Wand';
+import Wand from './src/games/Wand';
 
 // Setup server
 const scene = new LightShow();
