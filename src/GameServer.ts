@@ -1,8 +1,7 @@
 import express from 'express';
 import { Express, NextFunction, Request, Response } from 'express'
-import { createServer, Server } from 'https';
-import { readFileSync } from 'fs';
-import SocketIO, { Socket } from "socket.io";
+import { createServer, Server } from 'http';
+import SocketIO from "socket.io";
 
 import UserManager from './UserManager';
 import LightShow from './scene/LightShow';
@@ -17,11 +16,7 @@ export default class GameServer {
        this.app = express();
 
         // initialize a simple  server
-        this.httpServer = createServer({
-            key: readFileSync('server.key'),
-            cert: readFileSync('server.cert'),
-            rejectUnauthorized: false
-        }, this.app);
+        this.httpServer = createServer(this.app);
 
         this.gallium = SocketIO(this.httpServer, {
             path: '/gallium'
