@@ -1,12 +1,10 @@
 import Game from './Game'
-import RayTracer from '../utils/RayTracer'
 import User from '../utils/User'
+import LightShow from '../LightShow';
 
 export default class Wand extends Game {
-    // private raytracer: RayTracer;
-
-    constructor() {
-        super("Wand", ["odometry"]);
+    constructor(lightShow: LightShow) {
+        super(lightShow, "Wand", ["odometry"]);
     }
 
     setup() {
@@ -29,13 +27,5 @@ export default class Wand extends Game {
                 this.lightShow.allOff();
             }
         }
-    }
-
-    private castRay() {
-        // const hit = this.raytracer.castRay(this.gameManager.show, user)
-        // console.log(hit);
-        // if (hit !== undefined) {
-        //     user.currentSocket.emit('intersection', hit);
-        // }
     }
 }

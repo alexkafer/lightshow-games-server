@@ -1,11 +1,11 @@
 import Game from './Game'
 import User from "../utils/User"
+import LightShow from '../LightShow';
 
 export default class Pong extends Game {
 
-
-    constructor() {
-        super("Pong", ['ping']);
+    constructor(lightShow: LightShow) {
+        super(lightShow, "Pong", ['ping']);
     }
 
     setup(): void {

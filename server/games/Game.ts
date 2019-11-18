@@ -17,16 +17,13 @@ export default abstract class Game {
     abstract shutdown() : void;
     abstract action(user: User, message: string, payload: any) : void;
 
-    constructor(title: string, listenFor: string[], maxPlayers: number = Infinity) {
+    constructor(lightShow: LightShow, title: string, listenFor: string[], maxPlayers: number = Infinity) {
         this.title = title;
         this.listenFor = listenFor;
+        this.maxPlayers = maxPlayers;
+        this.lightShow = lightShow;
 
         this.players = new LinkedList<User>();
-    }
-
-    public initialize(lightShow: LightShow) {
-        this.lightShow = lightShow;
-        this.setup()
     }
 
     public addPlayer(user: User): boolean {

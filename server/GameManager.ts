@@ -2,10 +2,7 @@ import Game from './games/Game'
 import User from './utils/User';
 
 import { Queue } from 'queue-typescript';
-import GameServer from './GameServer';
-import AdminPortal from './admin/Admin';
 import UserManager from './UserManager';
-import LightShow from './LightShow';
 
 export default class GameManager {
 
@@ -19,24 +16,21 @@ export default class GameManager {
         return Array.from(GameManager.GAMES.keys());
     }
 
-    private currentGame: Game;
+    private currentGame: Game | undefined;
     private playerQueue: Queue<User>;
 
-    private gameServer: GameServer
-
-    constructor(um: UserManager, private ls: LightShow) {
+    constructor(um: UserManager) {
         this.playerQueue = new Queue<User>();
 
         um.on('userJoined', this.onNewUser.bind(this));
         um.on('userLeft', this.onUserLeft.bind(this));
     }
 
-    public getServer(): GameServer {
-        return this.gameServer;
-    }
-
     public getCurrentGame(): string {
-        return this.currentGame.title;
+        if (this.currentGame) {
+            return this.currentGame.title;
+        }
+        return 'None';
     }
 
     public startGame(newGame: string) {
@@ -48,7 +42,11 @@ export default class GameManager {
 
             // Update the current game, and set it up
             this.currentGame = GameManager.GAMES.get(newGame);
-            this.currentGame.initialize(this.ls);
+
+            if (this.currentGame) {
+                this.currentGame.setup();
+            }
+
         } else {
             console.error(newGame + " is not a registered game. Please fix or register the game.")
         }
@@ -62,7 +60,9 @@ export default class GameManager {
             // Attach listeners for the game
             this.currentGame.listenFor.forEach((action) => {
                 user.currentSocket.on(action, (payload: any) => {
-                    this.currentGame.action(user, action, payload);
+                    if (this.currentGame) {
+                        this.currentGame.action(user, action, payload);
+                    }
                 });
             });
         } else {
@@ -72,7 +72,7 @@ export default class GameManager {
     }
 
     public onUserLeft(user: User): void {
-        if (this.playerQueue.remove(user) === undefined) {
+        if (this.currentGame && this.playerQueue.remove(user) === undefined) {
             this.currentGame.disconnected(user);
         }
     }
