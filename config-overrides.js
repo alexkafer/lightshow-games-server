@@ -1,6 +1,8 @@
 const path = require('path');
+const {override, addBabelPlugin} = require('customize-cra')
 
 module.exports = {
+
     paths: function (paths, env) {  
 
         // Overriding existing react build script to point to the client subdirectory. 
@@ -11,7 +13,7 @@ module.exports = {
         paths.appHtml = path.resolve(__dirname, 'client', 'public', 'index.html');
         paths.appTypeDeclarations = path.resolve(__dirname, 'node_modules', 'react-scripts', 'lib', 'react-app.d.ts');
         paths.appTsConfig = path.resolve(__dirname, 'client', 'tsconfig.json');
-        
+
         return paths;
     },
 }

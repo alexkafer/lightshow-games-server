@@ -2,25 +2,27 @@ import React from 'react';
 import logo from './logo.svg';
 import './App.css';
 
+import Onboarding from 'react-native-onboarding-swiper';
+import { AppRegistry, StyleSheet, Text, View, Image } from 'react-native-web';
+
+
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload. Please work!
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Onboarding pages={[
+        {
+          backgroundColor: '#fff',
+          image: <Image source={logo} />,
+          title: 'Onboarding',
+          subtitle: 'Done with React Native Onboarding Swiper',
+        }
+      ]}
+    />
     </div>
   );
 }
+
+// AppRegistry.registerComponent('App', () => App);
+// AppRegistry.runApplication('App', { rootTag: document.getElementById('react-root') });
 
 export default App;
