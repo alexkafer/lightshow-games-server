@@ -2,6 +2,8 @@
 /* Welcome to ... the game server ..., dun dun dun */
 // ##############
 
+import {logger} from './server/utils/Logger'
+
 import GameServer from './server/GameServer'
 import GameManager from './server/GameManager'
 import UserManager from './server/UserManager';
@@ -10,8 +12,9 @@ import LightShow from './server/LightShow';
 // Register Games
 import Wand from './server/games/Wand'
 import Pong from './server/games/Pong';
-import Manual from './server/games/Manual';
+import Manual from './server/games/manual';
 
+// Interaction Interface
 import AdminPortal from './server/admin/Admin';
 
 const server = new GameServer();
