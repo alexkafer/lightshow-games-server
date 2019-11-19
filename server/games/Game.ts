@@ -1,4 +1,4 @@
-import { LinkedList } from 'linked-list-typescript';
+import { Queue } from '../utils/Queue'
 
 import User from '../utils/User'
 import LightShow from '../LightShow';
@@ -8,7 +8,8 @@ export default abstract class Game {
     public listenFor: string[];
 
     protected lightShow: LightShow;
-    protected players: LinkedList<User>;
+
+    protected players: Queue<User>;
 
     private maxPlayers: number;
 
@@ -23,19 +24,20 @@ export default abstract class Game {
         this.maxPlayers = maxPlayers;
         this.lightShow = lightShow;
 
-        this.players = new LinkedList<User>();
+        this.players = new Queue<User>();
     }
 
     public addPlayer(user: User): boolean {
-        if (this.players.length < this.maxPlayers) {
-            this.players.append(user);
-            return true;
-        }
+        return true;
+        // if (this.players.length < this.maxPlayers) {
+        //     this.players.push(user);
+        //     return true;
+        // }
 
-        return false;
+        // return false;
     }
 
     public disconnected(user: User) {
-        this.players.remove(user);
+        // this.players.remove(user);
     };
 }

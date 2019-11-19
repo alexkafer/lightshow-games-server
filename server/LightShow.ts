@@ -1,7 +1,10 @@
 import SocketIO from "socket.io";
 import GameServer from "./GameServer";
+import { throwStatement } from "babel-types";
 
 export default class LightShow {
+    private gallium: SocketIO.Server;
+
     constructor(private gs: GameServer) {
         this.gallium = SocketIO(gs.getHTTPServer(), {
             path: '/gallium'
@@ -14,12 +17,17 @@ export default class LightShow {
             }
             return next(new Error('authentication error'));
         });
+
+        this.gallium.on('connection', this.userConnection.bind(this));
     }
 
-    private gallium: SocketIO.Server;
+    private userConnection(socket: any) {
+        console.log('gallium connected');
+        socket.join('gallium');
 
-    public connect(gallium: SocketIO.Server) {
-        this.gallium = gallium;
+        socket.on('disconnect', () => {
+            console.log('gallium disconnected');
+        });
     }
 
     public sendFrame(event: string, payload: number[]) {

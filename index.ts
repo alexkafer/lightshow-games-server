@@ -10,6 +10,7 @@ import LightShow from './server/LightShow';
 // Register Games
 import Wand from './server/games/Wand'
 import Pong from './server/games/Pong';
+import Manual from './server/games/Manual';
 
 import AdminPortal from './server/admin/Admin';
 
@@ -22,13 +23,16 @@ GameManager.registerGame(new Wand(lightShow), WAND);
 const PONG: string = 'PONG';
 GameManager.registerGame(new Pong(lightShow), PONG);
 
+const MANUAL: string = 'MANUAL';
+GameManager.registerGame(new Manual(lightShow), MANUAL);
+
 const userManager = new UserManager(server);
 const gameManager = new GameManager(userManager);
 
 const adminPortal = new AdminPortal(gameManager);
 adminPortal.initRoutes(server.getExpressApp());
 
-gameManager.startGame(WAND);
+gameManager.startGame(MANUAL);
 
 server.serveClient();
 

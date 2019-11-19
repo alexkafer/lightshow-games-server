@@ -1,7 +1,7 @@
 import Game from './games/Game'
 import User from './utils/User';
 
-import { Queue } from 'queue-typescript';
+import { Queue } from './utils/Queue';
 import UserManager from './UserManager';
 
 export default class GameManager {
@@ -67,13 +67,18 @@ export default class GameManager {
             });
         } else {
             // Game doesn't have space. Add them to the queue.
-            this.playerQueue.enqueue(user);
+            this.playerQueue.push(user);
         }
     }
 
     public onUserLeft(user: User): void {
-        if (this.currentGame && this.playerQueue.remove(user) === undefined) {
+        if (this.currentGame) {
             this.currentGame.disconnected(user);
+
+            const nextPlayer = this.playerQueue.pop();
+            if (nextPlayer && nextPlayer.currentSocket && nextPlayer.currentSocket.connected) {
+                this.onNewUser(nextPlayer);
+            }
         }
     }
 }

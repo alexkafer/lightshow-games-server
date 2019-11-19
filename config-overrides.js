@@ -1,7 +1,14 @@
 const path = require('path');
-const {override, addBabelPlugin} = require('customize-cra')
+const {getBabelLoader} = require('customize-cra');
 
 module.exports = {
+    // webpack: function(config, env) {
+    //     // ...add your webpack config
+    //     getBabelLoader(config, true).options.plugins.push('@babel/plugin-proposal-class-properties');
+    //     console.log(config);
+
+    //     return config;
+    // },
 
     paths: function (paths, env) {  
 

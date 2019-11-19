@@ -1,0 +1,36 @@
+@import '~bootstrap/scss/bootstrap.scss';
+
+.disable-dbl-tap-zoom {
+  touch-action: manipulation;
+}
+
+main {
+  flex-shrink: 1; 
+  height: 100%; 
+
+& > .container {
+    padding: 60px 15px 0;
+  }
+}
+
+.carousel {
+  height: 100%;
+}
+
+.page {
+  float: left; 
+  position: relative;
+  max-height: 100vh;
+  height: 100%;
+
+  position: relative;
+} 
+
+.center-item {
+  text-align: center;
+  margin: 0;
+  position: absolute;
+  top: 25%;
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
+}
