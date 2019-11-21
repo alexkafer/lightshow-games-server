@@ -1,49 +1,70 @@
 import React from 'react'
 import { connect } from "react-redux";
-import { getPermissions } from "./redux/selectors";
+import { getGame } from "./redux/selectors";
+import { updateQueue, loadGame } from "./redux/actions";
 
-import {Container, Button} from 'react-bootstrap'
-import OnBoard from './components/OnBoard'
+import Dashboard from './components/Dashboard';
+import Wand from './games/Wand';
 
-// import Manual from './games/Manual'
+import SocketContext from './services/socket-context';
+import openSocket from 'socket.io-client';
 
 import './App.scss'
-import Dashboard from './components/Dashboard';
 
-const App = ({motion}) => {
-  let reactSwipeEl;
+const socket = openSocket();
 
-  var mainAction;
-  if (!motion) {
-    mainAction = <OnBoard reactSwipeEl={reactSwipeEl}/>;
-  } else {
-    mainAction = <Dashboard />
+class App extends React.Component {
+  constructor({inGame, currentGame, loadGame, updateQueue}) {
+    super();
+
+    this.state = {
+      inGame,
+      currentGame
+    }
+
+    socket.on('game', (message) => {
+      if (message === "Wand") {
+        loadGame({
+          game: <Wand />
+        })
+      }
+    });
+
+    socket.on('queue', (message) => {
+      updateQueue(message)
+    });
   }
 
-  mainAction = <Dashboard />
-  
-  return (
-    <>
-      <main role='main'>
-          {mainAction}
-      </main>
-      {/* <footer className='footer mt-auto py-3 bg-dark text-white'>
-          <Container>
-            <div className="d-flex justify-content-between">
-              <Button onClick={() => reactSwipeEl.prev()} variant="secondary">Prev</Button>
-              <h4>Test</h4>
-              <Button onClick={() => reactSwipeEl.next()} variant="primary">Next</Button>
-            </div>
-          </Container>
-      </footer> */}
-    </>
-  );
+  componentDidMount() {
+    if (!this.state.inGame || !this.state.currentGame) {
+      this.setState({
+        currentGame: <Dashboard />
+      });
+    }
+  }
+
+  render() {
+    return (
+      <SocketContext.Provider value={socket}>
+        <main role='main'>
+          {this.state.currentGame}
+        </main>
+      </SocketContext.Provider>
+    );
+  }
 }
 
-// AppRegistry.registerComponent('App', () => App);
-// AppRegistry.runApplication('App', { rootTag: document.getElementById('react-root') });
+
 const mapStateToProps = state => {
-  return getPermissions(state);
+  return getGame(state);
 }
 
-export default connect(mapStateToProps)(App);
+const mapDispatchToProps = dispatch => {
+  return {
+    // dispatching plain actions
+    loadGame: () => dispatch(loadGame()),
+    updateQueue: () => dispatch(updateQueue()),
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);

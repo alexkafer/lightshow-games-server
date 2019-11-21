@@ -1,26 +1,32 @@
 import React from 'react'
-import { connect } from "react-redux";
-import { logDeviceMotion, logDeviceOrientation } from "../redux/actions";
-import { getOrientation } from '../redux/selectors';
+import ConnectionStatus from '../components/ConnectionStatus';
+
+import SocketContext from '../services/socket-context';
 
 class Wand extends React.Component {
 
     constructor(props) {
         super(props);
         
-        this.handleMotionEvent = this.handleMotionEvent.bind(this);
+        // this.handleMotionEvent = this.handleMotionEvent.bind(this);
         this.handleOrientationEvent = this.handleOrientationEvent.bind(this);
+        this.compassNeedsCalibration = this.compassNeedsCalibration.bind(this);
+    }
+
+    compassNeedsCalibration(event) {
+        alert('Your compass needs calibrating! Wave your device in a figure-eight motion');
+        event.preventDefault();
     }
     
-    handleMotionEvent(event) {
-        var payload = {
-            x: event.accelerationIncludingGravity.x,
-            y: event.accelerationIncludingGravity.y,
-            z: event.accelerationIncludingGravity.z
-        };
+    // handleMotionEvent(event) {
+    //     var payload = {
+    //         x: event.accelerationIncludingGravity.x,
+    //         y: event.accelerationIncludingGravity.y,
+    //         z: event.accelerationIncludingGravity.z
+    //     };
 
-        this.props.logDeviceMotion(payload);
-    }
+    //     this.props.logDeviceMotion(payload);
+    // }
 
     handleOrientationEvent(event) {
         var payload = {
@@ -31,9 +37,7 @@ class Wand extends React.Component {
             compass_accuracy: event.webkitCompassAccuracy
         };
 
-        this.setState(payload)
-
-        this.props.logDeviceOrientation(payload);
+        this.props.socket.emit('orientation', payload);
     }
 
     componentDidMount () {
@@ -41,56 +45,35 @@ class Wand extends React.Component {
         window.addEventListener("deviceorientation", this.handleOrientationEvent, true);   
 
         // Could use device motion for dead recking
-        window.addEventListener("devicemotion", this.handleMotionEvent, true);   
+        // window.addEventListener("devicemotion", this.handleMotionEvent, true);   
+        window.addEventListener("compassneedscalibration", this.compassNeedsCalibration, true);
     }
 
     componentWillUnmount () {
         window.removeEventListener("deviceorientation", this.handleOrientationEvent, true);  
-        window.removeEventListener("devicemotion", this.handleMotionEvent, true);
+        window.removeEventListener("compassneedscalibration", this.compassNeedsCalibration, true);  
+        // window.removeEventListener("devicemotion", this.handleMotionEvent, true);
     }
 
     render() {
         return (
-            <div>
-                <strong>Motion</strong>
-                <p>
-                    x: {this.props.x.toFixed(2)}
-                </p>
-                <p>
-                    y: {this.props.y.toFixed(2)}
-                </p>
-                <p>
-                    z: {this.props.z.toFixed(2)}
-                </p>
-
-                <strong>Orientation</strong>
-                <p>
-                    alpha: {this.props.alpha.toFixed(2)}
-                </p>
-                <p>
-                    beta: {this.props.beta.toFixed(2)}
-                </p>
-                <p>
-                    gamma: {this.props.gamma.toFixed(2)}
-                </p>
-                <p>
-                    compass heading: {this.props.compass.toFixed(2)} +- {this.props.compass_accuracy.toFixed(2)}
-                </p>
-            </div>
+            <>
+                <nav class="navbar navbar-light bg-dark">
+                    <span class="navbar-brand mb-0 h1">Wand</span>
+                    <ConnectionStatus connected={this.socket.connected} />
+                </nav>
+                <div>
+                    Now playing, Wand
+                </div>
+            </>
         );
     } 
 }
 
-const mapStateToProps = state => {
-    return getOrientation(state);
-}
-  
-const mapDispatchToProps = dispatch => {
-    return {
-      // dispatching plain actions
-      logDeviceOrientation: () => dispatch(logDeviceOrientation()),
-      logDeviceMotion: () => dispatch(logDeviceMotion()),
-    }
-}
+const WandWithSocket = props => (
+    <SocketContext.Consumer>
+    {socket => <Wand {...props} socket={socket} />}
+    </SocketContext.Consumer>
+  )
 
-export default connect(mapStateToProps, mapDispatchToProps)(Wand);
+export default WandWithSocket;

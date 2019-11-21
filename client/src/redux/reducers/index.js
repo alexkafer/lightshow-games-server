@@ -1,5 +1,5 @@
 import { combineReducers } from "redux";
 import gyro from "./gyro";
-import permissions from "./permissions";
+import game from "./game";
 
-export default combineReducers({gyro, permissions});
+export default combineReducers({gyro, game});

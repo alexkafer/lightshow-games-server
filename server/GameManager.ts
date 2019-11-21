@@ -1,4 +1,4 @@
-import Game from './games/Game'
+import Game from './utils/Game'
 import User from './utils/User';
 
 import { Queue } from './utils/Queue';

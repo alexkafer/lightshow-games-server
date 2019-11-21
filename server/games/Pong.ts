@@ -1,4 +1,4 @@
-import Game from './Game'
+import Game from '../utils/Game'
 import User from "../utils/User"
 import LightShow from '../LightShow';
 

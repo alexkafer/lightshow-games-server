@@ -1,11 +1,12 @@
 import { Express, Router } from 'express';
 import GameManager from '../GameManager';
+import Layout from '../utils/Layout';
 
 export default class AdminPortal {
     private gameManager: GameManager;
     private router: Router;
 
-    constructor(gameManager: GameManager) {
+    constructor(gameManager: GameManager, layout: Layout) {
         this.gameManager = gameManager;
 
         this.router = Router();

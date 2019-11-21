@@ -2,9 +2,6 @@ import React from 'react'
 import { connect } from "react-redux";
 import { logDeviceMotion, logDeviceOrientation } from "../redux/actions";
 import { getOrientation } from '../redux/selectors';
-import openSocket from 'socket.io-client';
-
-const socket = openSocket();
 
 class Manual extends React.Component {
 

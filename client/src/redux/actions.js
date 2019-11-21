@@ -1,4 +1,4 @@
-import { DEVICE_MOTION, DEVICE_ORIENTATION, DEVICE_MOTION_PERMISSION } from './actionTypes'
+import { DEVICE_MOTION, DEVICE_ORIENTATION, START_GAME, END_GAME, LOAD_GAME, QUEUE_UPDATE } from './actionTypes'
 
 export const logDeviceMotion = content => ({
     type: DEVICE_MOTION,
@@ -20,9 +20,24 @@ export const logDeviceOrientation = content => ({
     }
 })
 
-export const askedForMotion = () => ({
-    type: DEVICE_MOTION_PERMISSION,
+export const startGame = () => ({
+    type: START_GAME
+})
+
+export const endGame = () => ({
+    type: END_GAME
+})
+
+export const loadGame = newGame => ({
+    type: LOAD_GAME,
     payload: {
-        motion: true
+        game: newGame | null
+    }
+})
+
+export const updateQueue = newPlace => ({
+    type: QUEUE_UPDATE,
+    payload: {
+        placeInLine: newPlace | -1
     }
 })

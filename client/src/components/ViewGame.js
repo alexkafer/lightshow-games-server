@@ -1,8 +1,6 @@
 import React from 'react'
 import Trianglify from 'trianglify'
 
-import logo from '../magic-wand.svg'
-
 class ViewGame extends React.Component {
 
     constructor(props) {
@@ -34,7 +32,7 @@ class ViewGame extends React.Component {
             <div className="view-game">
                 <canvas ref="canvas" />
                 <div className="game-icon-position">
-                    <img className="game-icon rounded-circle" src={logo} alt="Test" />
+                    <img className="game-icon rounded-circle" src={this.props.logo} alt="Game Logo" />
                 </div>
             </div>
         );

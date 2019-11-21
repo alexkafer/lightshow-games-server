@@ -16,10 +16,12 @@ import Manual from './server/games/manual';
 
 // Interaction Interface
 import AdminPortal from './server/admin/Admin';
+import Layout from './server/utils/Layout';
 
 const server = new GameServer();
 const lightShow = new LightShow(server);
 
+/** REGISTER GAMES */
 const WAND: string = 'WAND';
 GameManager.registerGame(new Wand(lightShow), WAND);
 
@@ -32,7 +34,11 @@ GameManager.registerGame(new Manual(lightShow), MANUAL);
 const userManager = new UserManager(server);
 const gameManager = new GameManager(userManager);
 
-const adminPortal = new AdminPortal(gameManager);
+/** LOAD LAYOUT */
+const map = require("./server/layouts/exceed/map.svg") as string;
+const layout = new Layout('exceed', map);
+
+const adminPortal = new AdminPortal(gameManager, layout);
 adminPortal.initRoutes(server.getExpressApp());
 
 gameManager.startGame(MANUAL);

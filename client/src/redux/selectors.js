@@ -10,7 +10,9 @@ export const getOrientation = store => ({
         z: store.gyro.z 
 });
 
-export const getPermissions = store => ({ 
-        motion: store.permissions.motion,
-});
+export const getGame = store => ({
+        currentGame: store.game.currentGame,
+        inGame: store.game.inGame,
+        placeInLine: store.game.placeInLine
+})
 
