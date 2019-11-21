@@ -35,8 +35,7 @@ const userManager = new UserManager(server);
 const gameManager = new GameManager(userManager);
 
 /** LOAD LAYOUT */
-const map = require("./server/layouts/exceed/map.svg") as string;
-const layout = new Layout('exceed', map);
+const layout = new Layout('exceed', "./server/layouts/exceed/map.svg");
 
 const adminPortal = new AdminPortal(gameManager, layout);
 adminPortal.initRoutes(server.getExpressApp());

@@ -1,7 +1,7 @@
 import Game from './utils/Game'
 import User from './utils/User';
 
-import { Queue } from './utils/Queue';
+import PlayerQueue from './utils/PlayerQueue';
 import UserManager from './UserManager';
 
 export default class GameManager {
@@ -17,10 +17,10 @@ export default class GameManager {
     }
 
     private currentGame: Game | undefined;
-    private playerQueue: Queue<User>;
+    private playerQueue: PlayerQueue;
 
     constructor(um: UserManager) {
-        this.playerQueue = new Queue<User>();
+        this.playerQueue = new PlayerQueue();
 
         um.on('userJoined', this.onNewUser.bind(this));
         um.on('userLeft', this.onUserLeft.bind(this));
@@ -54,19 +54,35 @@ export default class GameManager {
 
     // Triggers a new user navigates to the website
     public onNewUser(user: User): void {
-        // Try adding the player
-        if (this.currentGame && this.currentGame.addPlayer(user)) {
+        user.currentSocket.emit("game", this.currentGame.title);
 
-            // Attach listeners for the game
-            this.currentGame.listenFor.forEach((action) => {
-                user.currentSocket.on(action, (payload: any) => {
-                    if (this.currentGame) {
-                        this.currentGame.action(user, action, payload);
-                    }
+        user.currentSocket.on("start", this.startGameForUser(user).bind(this))
+        user.currentSocket.on("end", this.endGameForUser(user).bind(this))
+
+        this.playerQueue.push(user);
+    }
+
+    public startGameForUser(user: User) {
+        return () => {
+            if (this.currentGame && this.playerQueue.isNext(user) && this.currentGame.addPlayer(user)) {
+                // Attach listeners for the game
+                this.currentGame.listenFor.forEach((action) => {
+                    user.currentSocket.on(action, (payload: any) => {
+                        if (this.currentGame) {
+                            this.currentGame.action(user, action, payload);
+                        }
+                    });
                 });
-            });
-        } else {
-            // Game doesn't have space. Add them to the queue.
+            }
+        }
+    }
+
+    public endGameForUser(user: User) {
+        return () => {
+            if (this.currentGame) {
+                this.currentGame.disconnected(user)
+            }
+
             this.playerQueue.push(user);
         }
     }
@@ -74,11 +90,8 @@ export default class GameManager {
     public onUserLeft(user: User): void {
         if (this.currentGame) {
             this.currentGame.disconnected(user);
-
-            const nextPlayer = this.playerQueue.pop();
-            if (nextPlayer && nextPlayer.currentSocket && nextPlayer.currentSocket.connected) {
-                this.onNewUser(nextPlayer);
-            }
         }
+
+        this.playerQueue.remove(user);
     }
 }

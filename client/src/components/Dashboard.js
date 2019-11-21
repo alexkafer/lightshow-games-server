@@ -45,6 +45,10 @@ class Dashboard extends React.Component {
         }
     }
 
+    startGame() {
+        this.props.socket.emit("start");
+    }
+
     render() {
         return (<>
             <div className="large-header">
@@ -58,7 +62,7 @@ class Dashboard extends React.Component {
                         <p>
                             {this.state.instructions}
                         </p>
-                        <Button variant={this.state.place === 0 ? "primary" : "secondary"} size="lg" block disabled={this.state.place !== 0}>Play</Button>
+                        <Button onClick={startGame} variant={this.state.place === 0 ? "primary" : "secondary"} size="lg" block disabled={this.state.place !== 0}>Play</Button>
                     </div>
                     
                 </Container>
