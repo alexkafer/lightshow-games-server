@@ -5,9 +5,10 @@ import { getPermissions } from "./redux/selectors";
 import {Container, Button} from 'react-bootstrap'
 import OnBoard from './components/OnBoard'
 
-import Manual from './games/Manual'
+// import Manual from './games/Manual'
 
 import './App.scss'
+import Dashboard from './components/Dashboard';
 
 const App = ({motion}) => {
   let reactSwipeEl;
@@ -16,15 +17,17 @@ const App = ({motion}) => {
   if (!motion) {
     mainAction = <OnBoard reactSwipeEl={reactSwipeEl}/>;
   } else {
-    mainAction = <Manual />
+    mainAction = <Dashboard />
   }
 
+  mainAction = <Dashboard />
+  
   return (
     <>
       <main role='main'>
           {mainAction}
       </main>
-      <footer className='footer mt-auto py-3 bg-dark text-white'>
+      {/* <footer className='footer mt-auto py-3 bg-dark text-white'>
           <Container>
             <div className="d-flex justify-content-between">
               <Button onClick={() => reactSwipeEl.prev()} variant="secondary">Prev</Button>
@@ -32,7 +35,7 @@ const App = ({motion}) => {
               <Button onClick={() => reactSwipeEl.next()} variant="primary">Next</Button>
             </div>
           </Container>
-      </footer>
+      </footer> */}
     </>
   );
 }

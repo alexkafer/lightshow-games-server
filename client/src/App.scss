@@ -26,6 +26,61 @@ main {
   position: relative;
 } 
 
+.header-connection {
+  float: left; 
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin: 20px;
+  background:#333333aa;
+  color: #fff;
+  padding: 5px 15px;
+  border-radius: 5px;
+}
+
+.dot {
+  height: 25px;
+  width: 25px;
+  
+  border-radius: 50%;
+  display: inline-block;
+
+  &.red {
+    background-color: #e50000;
+  }
+
+  &.green {
+    background-color: #4BCC17;
+  }
+}
+
+.text {
+  height: 25px;
+  display: inline-block;
+  line-height: 25px;
+}
+
+.game-icon-position {
+  height: 20vh;
+}
+
+.game-icon {
+  padding: 10px;
+  max-width: 200px;
+  background-color: white;
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
+}
+// }
+
+.view-game {
+  text-align: center;
+}
+
+.dashboard-body {
+  text-align: center;
+}
+
 .center-item {
   text-align: center;
   margin: 0;
