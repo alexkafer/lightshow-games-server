@@ -57,7 +57,7 @@ class Dashboard extends React.Component {
             </div>
             <div className="dashboard-body">
                 <Container>
-                    <h1>Wand</h1>
+                    <h1>{this.state.game}</h1>
                     <div className="queue p-5">
                         <p>
                             {this.state.instructions}

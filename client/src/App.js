@@ -19,26 +19,38 @@ class App extends React.Component {
 
     this.state = {
       inGame,
-      currentGame
+      currentGame,
+      action: <div>Error. Nothing loaded.</div>
     }
 
-    socket.on('game', (message) => {
-      if (message === "Wand") {
-        loadGame({
-          game: <Wand />
-        })
-      }
+    socket.on('game', (game) => {
+      console.log("Game: ", game);
+      loadGame(game)
     });
 
-    socket.on('queue', (message) => {
-      updateQueue(message)
+    socket.on('queue', (place) => {
+      console.log("Queue: ", place);
+      updateQueue(place)
     });
   }
 
   componentDidMount() {
-    if (!this.state.inGame || !this.state.currentGame) {
+    if (!this.state.inGame) {
       this.setState({
-        currentGame: <Dashboard />
+        action: <Dashboard />
+      });
+    } else {
+      var game;
+      switch(this.state.currentGame) {
+        case "Wand": 
+          game = <Wand />
+          break;
+        default:
+          game = <p>An error occurred. Please refresh and try again.</p>
+      }
+
+      this.setState({
+        action: game
       });
     }
   }
@@ -47,7 +59,7 @@ class App extends React.Component {
     return (
       <SocketContext.Provider value={socket}>
         <main role='main'>
-          {this.state.currentGame}
+          {this.state.action}
         </main>
       </SocketContext.Provider>
     );
