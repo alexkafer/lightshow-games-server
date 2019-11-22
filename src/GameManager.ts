@@ -4,11 +4,13 @@ import User from './utils/User';
 import PlayerQueue from './utils/PlayerQueue';
 import UserManager from './UserManager';
 
+import logger from './utils/Logger';
+
 export default class GameManager {
 
     private static GAMES: Map<string, Game> = new Map<string, Game>();;
     public static registerGame(game: Game, identifer: string) {
-        console.debug("Registered " + identifer);
+        logger.debug("Registered " + identifer);
         GameManager.GAMES.set(identifer, game);
     }
 
@@ -48,7 +50,7 @@ export default class GameManager {
             }
 
         } else {
-            console.error(newGame + " is not a registered game. Please fix or register the game.")
+            logger.error(newGame + " is not a registered game. Please fix or register the game.")
         }
     }
 
@@ -56,15 +58,21 @@ export default class GameManager {
     public onNewUser(user: User): void {
         user.currentSocket.emit("game", this.currentGame.title);
 
-        user.currentSocket.on("start", this.startGameForUser(user).bind(this))
-        user.currentSocket.on("end", this.endGameForUser(user).bind(this))
+        user.currentSocket.on("join", () => {
+            this.playerQueue.push(user);
+        });
 
-        this.playerQueue.push(user);
+        user.currentSocket.on("cancel", () => {
+            this.playerQueue.remove(user);
+        });
     }
 
     public startGameForUser(user: User) {
         return () => {
             if (this.currentGame && this.playerQueue.isNext(user) && this.currentGame.addPlayer(user)) {
+
+                // Game has started!
+
                 // Attach listeners for the game
                 this.currentGame.listenFor.forEach((action) => {
                     user.currentSocket.on(action, (payload: any) => {
@@ -73,25 +81,20 @@ export default class GameManager {
                         }
                     });
                 });
-            }
-        }
-    }
 
-    public endGameForUser(user: User) {
-        return () => {
-            if (this.currentGame) {
-                this.currentGame.disconnected(user)
+                // Allow the user to manually end the game
+                user.currentSocket.on("end", () => {
+                    if (this.currentGame) {
+                        this.currentGame.disconnected(user);
+                    }
+                })
             }
-
-            this.playerQueue.push(user);
         }
     }
 
     public onUserLeft(user: User): void {
-        if (this.currentGame) {
+        if (!this.playerQueue.remove(user)) {
             this.currentGame.disconnected(user);
         }
-
-        this.playerQueue.remove(user);
     }
 }

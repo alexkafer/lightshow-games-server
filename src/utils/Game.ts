@@ -35,6 +35,8 @@ export default abstract class Game {
     }
 
     public disconnected(user: User) {
-        this.players.delete(user.currentSocket.id);
+        if (this.players.has(user.currentSocket.id)) {
+            this.players.delete(user.currentSocket.id);
+        }
     };
 }

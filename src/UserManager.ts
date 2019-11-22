@@ -4,6 +4,8 @@ import User from './utils/User';
 import SocketIO from "socket.io";
 import GameServer from './GameServer';
 
+import logger from './utils/Logger'
+
 export default class UserManager extends EventEmitter {
     private users: Map<string, User>;
     private io: SocketIO.Server;
@@ -18,13 +20,13 @@ export default class UserManager extends EventEmitter {
     }
 
     private userConnection(socket: any) {
-        console.log('a user connected');
+        logger.debug('a user connected');
         socket.join('users');
 
         this.addUser(socket);
 
         socket.on('disconnect', () => {
-            console.log('user disconnected');
+            logger.debug('user disconnected');
             this.disconnectUser(socket);
         });
     }
@@ -32,13 +34,13 @@ export default class UserManager extends EventEmitter {
     public addUser(socket: SocketIO.Socket) {
         const user = new User(socket);
         this.users.set(socket.id, user);
+        logger.http("[CONNECTED] User with id: " + socket.id);
         this.emit("userJoined", user);
-        console.debug("User joined!");
     }
 
     public disconnectUser(socket: SocketIO.Socket) {
+        logger.http("[DISCONNECTED] User with id: " + socket.id);
         this.emit("userLeft", this.users.get(socket.id));
         this.users.delete(socket.id);
-        console.debug("User left.");
     }
 }

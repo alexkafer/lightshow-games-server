@@ -2,6 +2,8 @@ import Game from '../utils/Game'
 import User from "../utils/User"
 import LightShow from '../LightShow';
 
+import logger from '../utils/Logger';
+
 export default class Pong extends Game {
 
     constructor(lightShow: LightShow) {
@@ -9,17 +11,17 @@ export default class Pong extends Game {
     }
 
     setup(): void {
-        console.log("Starting pong");
+        logger.info("Starting pong");
     }
 
     loop(): void {
-        console.log("Loop pong");
+        logger.info("Loop pong");
     }
     shutdown(): void {
-        console.log("Shutting down pong");
+        logger.info("Shutting down pong");
     }
 
     action(user: User, message: string, payload: any): void {
-        console.log("Pong action!", message, payload);
+        logger.info("Pong action!", message, payload);
     }
 }

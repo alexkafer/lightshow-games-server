@@ -19,7 +19,7 @@ const options: LoggerOptions = {
 
 const logger = createLogger(options);
 
-if (process.env.NODE_ENV === "develop") {
+if (process.env.NODE_ENV === "dev") {
     logger.add(new transports.Console({
         level: 'debug',
         format: winston.format.combine(
@@ -29,4 +29,4 @@ if (process.env.NODE_ENV === "develop") {
       }));
 }
 
-export { logger };
+export default logger;

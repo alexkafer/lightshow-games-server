@@ -2,6 +2,7 @@ import express, { Express } from 'express'
 import { createServer, Server } from 'http';
 
 import path from 'path';
+import logger from './utils/Logger';
 
 export default class GameServer {
     private app: Express
@@ -12,8 +13,6 @@ export default class GameServer {
 
         // initialize a simple  server
         this.httpServer = createServer(this.app);
-
-        // this.app.use(express.json());
     }
 
     public getHTTPServer() {
@@ -38,7 +37,7 @@ export default class GameServer {
         }
 
         this.httpServer.listen(port, () => {
-            console.log(`Game Server started on port ${port}`);
+            logger.info(`Game Server started on port ${port}`);
         });
     }
 }

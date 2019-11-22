@@ -3,7 +3,7 @@ import User from '../utils/User'
 import LightShow from '../LightShow';
 
 import {Vector2, Vector3} from 'three';
-import { logger } from '../utils/Logger';
+import logger from '../utils/Logger';
 
 export default class Wand extends Game {
 
@@ -15,15 +15,15 @@ export default class Wand extends Game {
     }
 
     setup() {
-        console.log("Starting Wand");
+        logger.info("Starting Wand");
     }
 
     loop() {
-        console.log("Loop wand");
+        logger.debug("Loop wand");
     };
 
     shutdown() {
-        console.log("Shutdown wand");
+        logger.info("Shutdown wand");
     }
 
     action(user: User, message: string, payload: any) {

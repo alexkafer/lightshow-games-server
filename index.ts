@@ -2,21 +2,21 @@
 /* Welcome to ... the game server ..., dun dun dun */
 // ##############
 
-import {logger} from './server/utils/Logger'
+import logger from './src/utils/Logger'
 
-import GameServer from './server/GameServer'
-import GameManager from './server/GameManager'
-import UserManager from './server/UserManager';
-import LightShow from './server/LightShow';
+import GameServer from './src/GameServer'
+import GameManager from './src/GameManager'
+import UserManager from './src/UserManager'
+import LightShow from './src/LightShow'
 
 // Register Games
-import Wand from './server/games/Wand'
-import Pong from './server/games/Pong';
-import Manual from './server/games/manual';
+import Wand from './src/games/Wand'
+import Pong from './src/games/Pong'
+import Manual from './src/games/manual'
 
 // Interaction Interface
-import AdminPortal from './server/admin/Admin';
-import Layout from './server/utils/Layout';
+import AdminPortal from './src/admin/Admin'
+import Layout from './src/utils/Layout'
 
 const server = new GameServer();
 const lightShow = new LightShow(server);

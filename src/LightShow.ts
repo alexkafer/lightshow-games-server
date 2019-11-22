@@ -1,6 +1,7 @@
 import SocketIO from "socket.io";
 import GameServer from "./GameServer";
-import { throwStatement } from "babel-types";
+
+import logger from "./utils/Logger";
 
 export default class LightShow {
     private gallium: SocketIO.Server;
@@ -22,11 +23,11 @@ export default class LightShow {
     }
 
     private userConnection(socket: any) {
-        console.log('gallium connected');
+        logger.debug('gallium connected')
         socket.join('gallium');
 
         socket.on('disconnect', () => {
-            console.log('gallium disconnected');
+            logger.debug('gallium disconnected');
         });
     }
 
@@ -35,12 +36,12 @@ export default class LightShow {
     }
 
     public allOn() {
-        console.debug("Turning all lights on");
+        logger.debug("Turning all lights on");
         return this.gallium.emit('allOn');
     }
 
     public allOff() {
-        console.debug("Turning all lights off")
+        logger.debug("Turning all lights off")
         return this.gallium.emit('allOff');
     }
 }
