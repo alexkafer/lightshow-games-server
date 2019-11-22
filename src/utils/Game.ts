@@ -25,13 +25,12 @@ export default abstract class Game {
         this.lightShow = lightShow;
     }
 
-    public addPlayer(user: User): boolean {
-        if (this.players.size < this.playerMax) {
-            this.players.set(user.currentSocket.id, user);
-            return true;
-        } else {
-            return false;
-        }
+    public canAddPlayer(): boolean {
+        return this.players.size < this.playerMax;
+    }
+
+    public addPlayer(user: User) {
+        this.players.set(user.currentSocket.id, user);
     }
 
     public disconnected(user: User) {

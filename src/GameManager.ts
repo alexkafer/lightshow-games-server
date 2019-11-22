@@ -52,6 +52,37 @@ export default class GameManager {
         } else {
             logger.error(newGame + " is not a registered game. Please fix or register the game.")
         }
+
+        this.fillPlayers();
+    }
+
+    private async fillPlayers() {
+        if (this.currentGame && this.currentGame.canAddPlayer()) {
+            logger.info('Asking for player');
+            const newPlayer = await this.playerQueue.getNextPlayer();
+            this.currentGame.addPlayer(newPlayer);
+            logger.info('Player added');
+
+            // Attach listeners for the game
+            this.currentGame.listenFor.forEach((action) => {
+                newPlayer.currentSocket.on(action, (payload: any) => {
+                    if (this.currentGame) {
+                        this.currentGame.action(newPlayer, action, payload);
+                    }
+                });
+            });
+
+            // Allow the user to manually end the game
+            newPlayer.currentSocket.on("end", () => {
+                if (this.currentGame) {
+                    this.currentGame.disconnected(newPlayer);
+                }
+            });
+
+            newPlayer.currentSocket.emit("started");
+
+            this.fillPlayers();
+        }
     }
 
     // Triggers a new user navigates to the website
@@ -63,38 +94,14 @@ export default class GameManager {
         });
 
         user.currentSocket.on("cancel", () => {
-            this.playerQueue.remove(user);
+            this.playerQueue.removeFromQueue(user);
         });
     }
 
-    public startGameForUser(user: User) {
-        return () => {
-            if (this.currentGame && this.playerQueue.isNext(user) && this.currentGame.addPlayer(user)) {
-
-                // Game has started!
-
-                // Attach listeners for the game
-                this.currentGame.listenFor.forEach((action) => {
-                    user.currentSocket.on(action, (payload: any) => {
-                        if (this.currentGame) {
-                            this.currentGame.action(user, action, payload);
-                        }
-                    });
-                });
-
-                // Allow the user to manually end the game
-                user.currentSocket.on("end", () => {
-                    if (this.currentGame) {
-                        this.currentGame.disconnected(user);
-                    }
-                })
-            }
-        }
-    }
-
     public onUserLeft(user: User): void {
-        if (!this.playerQueue.remove(user)) {
+        if (!this.playerQueue.removeFromQueue(user)) {
             this.currentGame.disconnected(user);
+            this.fillPlayers();
         }
     }
 }

@@ -7,7 +7,7 @@ import logger from '../utils/Logger';
 export default class Pong extends Game {
 
     constructor(lightShow: LightShow) {
-        super(lightShow, "Pong", ['ping']);
+        super(lightShow, "Pong", ['game-ping'], 1);
     }
 
     setup(): void {
@@ -22,6 +22,9 @@ export default class Pong extends Game {
     }
 
     action(user: User, message: string, payload: any): void {
-        logger.info("Pong action!", message, payload);
+        logger.info(message + "! " + JSON.stringify(payload));
+        if (message === "game-ping") {
+            user.currentSocket.emit("game-pong", new Date());
+        }
     }
 }

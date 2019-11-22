@@ -12,7 +12,6 @@ import LightShow from './src/LightShow'
 // Register Games
 import Wand from './src/games/Wand'
 import Pong from './src/games/Pong'
-import Manual from './src/games/manual'
 
 // Interaction Interface
 import AdminPortal from './src/admin/Admin'
@@ -28,9 +27,6 @@ GameManager.registerGame(new Wand(lightShow), WAND);
 const PONG: string = 'PONG';
 GameManager.registerGame(new Pong(lightShow), PONG);
 
-const MANUAL: string = 'MANUAL';
-GameManager.registerGame(new Manual(lightShow), MANUAL);
-
 const userManager = new UserManager(server);
 const gameManager = new GameManager(userManager);
 
@@ -40,7 +36,7 @@ const layout = new Layout('exceed', "./server/layouts/exceed/map.svg");
 const adminPortal = new AdminPortal(gameManager, layout);
 adminPortal.initRoutes(server.getExpressApp());
 
-gameManager.startGame(MANUAL);
+gameManager.startGame(PONG);
 
 server.serveClient();
 
