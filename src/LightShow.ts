@@ -121,9 +121,9 @@ export default class LightShow {
     }
 
     public get3DLights(): Points {
-        var geometry = new BufferGeometry();
+        const geometry = new BufferGeometry();
 
-        var positions: any[] = [];
+        const positions: any[] = [];
 
         this.lights.forEach((light: Light) => {
             positions.push( light.position.x, 0, light.position.y);

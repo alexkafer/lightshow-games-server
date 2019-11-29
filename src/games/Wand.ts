@@ -21,13 +21,16 @@ export default class Wand extends Game {
     }
 
     loop() {
-        this.players.forEach((user: User) => {
-            const light = this.findLight(user.getPosition(), user.getDirection());
+        const players = this.userManager.getPlayers();
+        if (players) {
+            players.forEach((user: User) => {
+                const light = this.findLight(user.getPosition(), user.getDirection());
 
-            if (light) {
-                this.lightShow.addToChannel(5, 255);
-            }
-        })
+                if (light) {
+                    this.lightShow.addToChannel(5, 255);
+                }
+            })
+        }
     };
 
     shutdown() {

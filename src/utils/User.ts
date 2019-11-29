@@ -3,8 +3,9 @@ import { Vector3, Euler } from "three";
 
 export default class User {
     currentSocket: Socket;
-    position: Vector3 | undefined;
-    direction: Vector3 | undefined;
+
+    private position: Vector3 | undefined;
+    private direction: Vector3 | undefined;
 
     constructor(socket: Socket) {
         this.currentSocket = socket;
@@ -19,9 +20,15 @@ export default class User {
     }
 
     public setDirection(alpha: number, beta: number, gamma: number) {
-        // var degreesDiff = new Euler(alpha, beta, gamma);
-        // var b = new Vector3( 1, 0, 1 );
-        this.direction = new Vector3(beta, alpha, gamma);
+        const pi = Math.PI;
+        const yaw = alpha * (pi/180);
+        const pitch = beta * (pi/180);
+
+        const x = Math.sin(yaw)*Math.cos(pitch);
+        const z = Math.cos(yaw)*Math.cos(pitch);
+        const y = Math.sin(pitch);
+
+        this.direction = new Vector3(x, y, z);
     }
 
     public getDirection(): Vector3 {

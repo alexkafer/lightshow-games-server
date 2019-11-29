@@ -1,14 +1,14 @@
 import User from './User'
 import LightShow from '../LightShow';
+import UserManager from '../UserManager';
 
 export default abstract class Game {
     public title: string;
     public listenFor: string[];
+    public playerMax: number;
 
     protected lightShow: LightShow;
-
-    private playerMax: number;
-    protected players: Map<string, User>
+    protected userManager: UserManager;
 
     abstract setup() : void;
     abstract loop() : void;
@@ -18,24 +18,12 @@ export default abstract class Game {
     constructor(lightShow: LightShow, title: string, listenFor: string[], playerMax: number = Infinity) {
         this.title = title;
         this.listenFor = listenFor;
-
         this.playerMax = playerMax;
-        this.players = new Map<string, User>();
-
         this.lightShow = lightShow;
     }
 
-    public canAddPlayer(): boolean {
-        return this.players.size < this.playerMax;
+    public initialize(userManager: UserManager) {
+        this.userManager = userManager;
+        this.setup();
     }
-
-    public addPlayer(user: User) {
-        this.players.set(user.currentSocket.id, user);
-    }
-
-    public disconnected(user: User) {
-        if (this.players.has(user.currentSocket.id)) {
-            this.players.delete(user.currentSocket.id);
-        }
-    };
 }

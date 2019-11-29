@@ -1,3 +1,5 @@
+import path from 'path';
+
 import lowdb from "lowdb";
 import { default as FileAsync } from "lowdb/adapters/FileAsync";
 
@@ -8,16 +10,16 @@ import Light from "./Light";
 
 export default class Layout {
     public title: string;
-    public mapPath: string;
+    public resourcePath: string;
 
     private db: any;
     private router: Router;
 
-    constructor(title: string, mapPath: string) {
+    constructor(title: string, resourcePath: string) {
         this.title = title;
-        this.mapPath = mapPath;
+        this.resourcePath = resourcePath;
 
-        this.initDatabase(title + '.json', mapPath);
+        this.initDatabase(title + '.json', resourcePath);
 
         this.router = Router();
         this.setupRouter();
@@ -27,8 +29,12 @@ export default class Layout {
         this.router.use(json());
         this.router.use(cors());
 
-        this.router.get('/',  (req, res) => {
-            res.sendFile(this.mapPath);
+        this.router.get('/map',  (req, res) => {
+            res.sendFile(path.join(this.resourcePath, 'map.svg'));
+        });
+
+        this.router.get('/scene',  (req, res) => {
+            res.sendFile(path.join(this.resourcePath, 'scene.obj'));
         });
     }
 

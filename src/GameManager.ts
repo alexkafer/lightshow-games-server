@@ -48,7 +48,7 @@ export default class GameManager {
             this.currentGame = GameManager.GAMES.get(newGame);
 
             if (this.currentGame) {
-                this.currentGame.setup();
+                this.currentGame.initialize(this.userManager);
             }
 
             this.userManager.notifyGameUpdate(this.currentGame.title);
@@ -58,15 +58,22 @@ export default class GameManager {
 
         this.fillPlayers();
 
-        // Loop 5 times a second
+        // Loop game 5 times a second
         setInterval(this.currentGame.loop.bind(this.currentGame), 200);
+
+        // Update the admin interface every second
+        setInterval(this.userManager.updateAdmin.bind(this.userManager), 1000);
+    }
+
+    public canAddPlayer(): boolean {
+        return this.userManager.numPlayers() < this.currentGame.playerMax;
     }
 
     private async fillPlayers() {
-        if (this.currentGame && this.currentGame.canAddPlayer()) {
+        if (this.currentGame && this.canAddPlayer()) {
             logger.info('Asking for player');
             const newPlayer = await this.playerQueue.getNextPlayer();
-            this.currentGame.addPlayer(newPlayer);
+            this.userManager.addPlayer(newPlayer);
             logger.info('Player added');
 
             // Attach listeners for the game
@@ -81,7 +88,7 @@ export default class GameManager {
             // Allow the user to manually end the game
             newPlayer.currentSocket.on("end", () => {
                 if (this.currentGame) {
-                    this.currentGame.disconnected(newPlayer);
+                    this.userManager.removePlayer(newPlayer);
                 }
             });
 
@@ -111,7 +118,7 @@ export default class GameManager {
 
     public onUserLeft(user: User): void {
         if (!this.playerQueue.removeFromQueue(user)) {
-            this.currentGame.disconnected(user);
+            this.userManager.removePlayer(user);
             this.fillPlayers();
         }
     }
