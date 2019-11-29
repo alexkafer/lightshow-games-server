@@ -49,7 +49,7 @@ export default class ManageGame extends Component {
         {
             const objLoader = new OBJLoader2();
             objLoader.load('http://localhost:2567/layout/scene', (root) => {
-            scene.add(root);
+                scene.add(root);
             });
         }
 
@@ -69,7 +69,6 @@ export default class ManageGame extends Component {
             if (msg instanceof Array) {
                 msg.forEach(e => {
                     if (e.direction && e.position) {
-                        console.log(e.direction);
                         var dir = new THREE.Vector3( e.direction.x, e.direction.y, e.direction.z );
 
                         //normalize the direction vector (convert to vector of length 1)
@@ -84,7 +83,6 @@ export default class ManageGame extends Component {
                     }
                 });
             }
-            console.log(msg);
         })
 
         function render() {
