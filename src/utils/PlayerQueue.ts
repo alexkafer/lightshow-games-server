@@ -19,6 +19,10 @@ export default class PlayerQueue {
       }
     }
 
+    list() {
+      return this._queue.map((user: User) => user.currentSocket.id);
+    }
+
     getNextPlayer(): Promise<User> {
       return new Promise<User>((resolve) => {
         if (this._queue.length > 0) {

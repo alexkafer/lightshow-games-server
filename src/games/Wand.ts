@@ -5,13 +5,15 @@ import LightShow from '../LightShow';
 import {Vector2, Vector3} from 'three';
 import logger from '../utils/Logger';
 
+import { Raycaster } from "three";
+
 export default class Wand extends Game {
 
-    private locations: Map<string, Vector2>
-    private orientations: Map<string, Vector3>
+    private rayCaster: Raycaster;
 
     constructor(lightShow: LightShow) {
-        super(lightShow, "Wand", ["odometry"], 1);
+        super(lightShow, "Wand", ["position", "odometry"], 2);
+        this.rayCaster = new Raycaster();
     }
 
     setup() {
@@ -19,7 +21,13 @@ export default class Wand extends Game {
     }
 
     loop() {
-        logger.debug("Loop wand");
+        this.players.forEach((user: User) => {
+            const light = this.findLight(user.getPosition(), user.getDirection());
+
+            if (light) {
+                this.lightShow.addToChannel(5, 255);
+            }
+        })
     };
 
     shutdown() {
@@ -27,24 +35,33 @@ export default class Wand extends Game {
     }
 
     action(user: User, message: string, payload: any) {
-        logger.debug("Wand received action: ", message, payload);
+        logger.debug("Wand received action: " + message + payload);
 
         if (message === "position") {
             if (payload.x && payload.y) {
                 logger.verbose("Setting player position", payload);
-                this.locations.set(user.currentSocket.id, new Vector2(payload.x, payload.y));
+                user.setPosition(payload.x, payload.y);
             } else {
                 logger.warn("Received bad position payload", payload);
             }
         }
 
-        if (message === "orientation") {
+        if (message === "odometry") {
             if (payload.alpha && payload.beta && payload.gamma) {
-                logger.verbose("Setting player orientation", payload);
-                this.orientations.set(user.currentSocket.id, new Vector3(payload.alpha, payload.beta, payload.gamma));
+                logger.verbose("Setting player orientation", payload.compass);
+                user.setDirection(payload.alpha, payload.beta, payload.gamma);
             } else {
                 logger.warn("Received bad orientation payload", payload);
             }
         }
+    }
+
+    private findLight(origin: Vector3, direction: Vector3) {
+        if (origin && direction) {
+            this.rayCaster.set(origin, direction);
+            return this.rayCaster.intersectObject(this.lightShow.get3DLights());
+        }
+
+        return undefined;
     }
 }

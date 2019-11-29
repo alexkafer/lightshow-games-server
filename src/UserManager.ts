@@ -43,4 +43,8 @@ export default class UserManager extends EventEmitter {
         this.emit("userLeft", this.users.get(socket.id));
         this.users.delete(socket.id);
     }
+
+    public notifyGameUpdate(game: string) {
+        this.io.emit("game", game);
+    }
 }

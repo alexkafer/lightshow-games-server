@@ -1,22 +1,23 @@
 // ##############
 /* Welcome to ... the game server ..., dun dun dun */
 // ##############
-
-import logger from './src/utils/Logger'
+import path from 'path';
 
 import GameServer from './src/GameServer'
 import GameManager from './src/GameManager'
 import UserManager from './src/UserManager'
 import LightShow from './src/LightShow'
 
-// Register Games
+// Games
 import Wand from './src/games/Wand'
 import Pong from './src/games/Pong'
+import Manual from './src/games/Manual'
 
-// Interaction Interface
-import AdminPortal from './src/admin/Admin'
+/** Interaction Interface */
+import AdminAPI from './src/api/Admin'
 import Layout from './src/utils/Layout'
 
+/** START DEFAULT GAME */
 const server = new GameServer();
 const lightShow = new LightShow(server);
 
@@ -27,19 +28,22 @@ GameManager.registerGame(new Wand(lightShow), WAND);
 const PONG: string = 'PONG';
 GameManager.registerGame(new Pong(lightShow), PONG);
 
+const MANUAL: string = 'MANUAL';
+GameManager.registerGame(new Manual(lightShow), MANUAL);
+
+/** CREATE MANAGERS */
 const userManager = new UserManager(server);
 const gameManager = new GameManager(userManager);
 
-/** LOAD LAYOUT */
-const layout = new Layout('exceed', "./server/layouts/exceed/map.svg");
+const layout = new Layout("lightshow2019", path.join(__dirname, "..", "/src/layouts/lightshow2019/map.svg"))
 
-const adminPortal = new AdminPortal(gameManager, layout);
-adminPortal.initRoutes(server.getExpressApp());
+/** SERVE ADMIN API */
+server.use('/games', new AdminAPI(gameManager).getRouter());
+server.use('/layout', layout.getRouter());
+server.useAdmin(path.join(__dirname,  "..", 'admin', 'build'));
 
-gameManager.startGame(PONG);
+/** START DEFAULT GAME */
+gameManager.startGame(WAND);
 
-server.serveClient();
-
-// start the server
-const port = Number(process.env.PORT || 2567) + Number(process.env.NODE_APP_INSTANCE || 0);
-server.start(port);
+/** START SERVE */
+server.start(process.env.PORT || 2567);

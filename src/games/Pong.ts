@@ -15,7 +15,7 @@ export default class Pong extends Game {
     }
 
     loop(): void {
-        logger.info("Loop pong");
+        // logger.info("Loop pong");
     }
     shutdown(): void {
         logger.info("Shutting down pong");

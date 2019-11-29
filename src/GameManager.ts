@@ -20,8 +20,10 @@ export default class GameManager {
 
     private currentGame: Game | undefined;
     private playerQueue: PlayerQueue;
+    private userManager: UserManager;
 
     constructor(um: UserManager) {
+        this.userManager = um;
         this.playerQueue = new PlayerQueue();
 
         um.on('userJoined', this.onNewUser.bind(this));
@@ -49,11 +51,15 @@ export default class GameManager {
                 this.currentGame.setup();
             }
 
+            this.userManager.notifyGameUpdate(this.currentGame.title);
         } else {
             logger.error(newGame + " is not a registered game. Please fix or register the game.")
         }
 
         this.fillPlayers();
+
+        // Loop 5 times a second
+        setInterval(this.currentGame.loop.bind(this.currentGame), 200);
     }
 
     private async fillPlayers() {
@@ -83,6 +89,11 @@ export default class GameManager {
 
             this.fillPlayers();
         }
+    }
+
+    public listQueue(): string[]
+    {
+        return this.playerQueue.list();
     }
 
     // Triggers a new user navigates to the website
