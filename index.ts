@@ -35,7 +35,9 @@ GameManager.registerGame(new Manual(lightShow), MANUAL);
 const userManager = new UserManager(server);
 const gameManager = new GameManager(userManager);
 
-const layout = new Layout("lightshow2019", path.join(__dirname, "..", "/src/layouts/lightshow2019"))
+/** CREATE LAYOUT */
+const lightshow2019 = path.join(__dirname, "..", "/src/layouts/lightshow2019");
+const layout = new Layout("lightshow2019", lightshow2019, userManager);
 
 /** SERVE ADMIN API */
 server.use('/games', new AdminAPI(gameManager).getRouter());

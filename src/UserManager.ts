@@ -1,10 +1,13 @@
 import EventEmitter from 'events';
 
 import User from './utils/User';
+import Light from './utils/Light';
 import SocketIO from "socket.io";
 import GameServer from './GameServer';
 
 import logger from './utils/Logger'
+import { Vector3 } from 'three';
+
 
 export default class UserManager extends EventEmitter {
     private visitors: Map<string, User>;
@@ -25,6 +28,7 @@ export default class UserManager extends EventEmitter {
         this.admin = SocketIO(gs.getHTTPServer(), {
             path: '/admin',
         });
+        this.admin.on('connection', this.adminConnection.bind(this));
     }
 
     public getPlayers(): User[] {
@@ -63,6 +67,14 @@ export default class UserManager extends EventEmitter {
         socket.on('disconnect', () => {
             logger.debug('user disconnected');
             this.disconnectUser(socket);
+        });
+    }
+
+    private adminConnection(socket: any) {
+        logger.debug('an admin connected');
+
+        socket.on('disconnect', () => {
+            logger.debug('admin disconnected');
         });
     }
 

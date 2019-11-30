@@ -38,8 +38,6 @@ export default class Wand extends Game {
     }
 
     action(user: User, message: string, payload: any) {
-        logger.debug("Wand received action: " + message + payload);
-
         if (message === "position") {
             if (payload.x && payload.y) {
                 logger.verbose("Setting player position", payload);
@@ -51,7 +49,6 @@ export default class Wand extends Game {
 
         if (message === "odometry") {
             if (payload.alpha && payload.beta && payload.gamma) {
-                logger.verbose("Setting player orientation", payload.compass);
                 user.setDirection(payload.alpha, payload.beta, payload.gamma);
             } else {
                 logger.warn("Received bad orientation payload", payload);

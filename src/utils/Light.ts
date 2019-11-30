@@ -1,11 +1,14 @@
 import { Vector3 } from "three";
+import uuid from 'uuid';
 
 export default class Light {
+    public id: string;
     public position: Vector3;
     public channel: number;
 
-    constructor(position: Vector3, channel: number) {
-        this.position = position;
-        this.channel = channel
+    constructor(id: string, x: number, y: number, z: number, channel: number) {
+        this.id = id;
+        this.position = new Vector3(x, y, z);
+        this.channel = channel;
     }
 }
