@@ -46,6 +46,9 @@ export default class ManageGame extends Component {
         var lights = new THREE.Group();
         scene.add(lights);
 
+        var visitors = new THREE.Group();
+        scene.add(visitors);
+
         {
             const skyColor = 0xB1E1FF;  // light blue
             const groundColor = 0xB97A20;  // brownish orange
@@ -146,31 +149,34 @@ export default class ManageGame extends Component {
             if (lightsArray instanceof Array) {
                 console.log(lightsArray);
                 lightsArray.forEach((light) => {
-                    var lightMesh = new THREE.Mesh(new THREE.SphereGeometry(0.2, 32, 32), new THREE.MeshStandardMaterial({ color: 0xffffff}));
+                    var lightMesh = new THREE.Mesh(new THREE.SphereGeometry(1, 32, 32), new THREE.MeshStandardMaterial({ color: 0xffffff}));
                     lights.add(lightMesh);
                     lightMesh.position.set(light.position.x, light.position.y, light.position.z);
                     lightMesh.userData = light;
-                    console.log("New light with id:", lightMesh.userData.id);
                 })
             }
         }
 
-        var arrowHelper;
         socket.on('players', (msg) => {
             if (msg instanceof Array) {
                 msg.forEach(e => {
-                    if (e.direction && e.position) {
-                        var dir = new THREE.Vector3( e.direction.x, e.direction.y, e.direction.z );
+                    if (e.direction && e.position && e.id) {
+                        var axis = new THREE.Vector3(0, -1, 0);
 
-                        //normalize the direction vector (convert to vector of length 1)
-                        dir.normalize();
-    
-                        var origin = new THREE.Vector3( 0, 0, 0 );
-                        var length = 1;
-                        var hex = 0xffff00;
-    
-                        arrowHelper = new THREE.ArrowHelper( dir, origin, length, hex );
-                        scene.add( arrowHelper );
+                        var visitorMesh = visitors.getObjectByName(e.id);
+                        if (!visitorMesh) {
+                            console.log("New user!");
+                            visitorMesh = new THREE.Mesh(new THREE.ConeGeometry(0.4, 1), new THREE.MeshStandardMaterial({ color: 0x00ffff}));
+                            visitorMesh.name = e.id;
+                            visitorMesh.add(new THREE.ArrowHelper( axis,  new THREE.Vector3(0, 0, 0), 20, 0xffff00));
+                            visitors.add( visitorMesh );
+
+                            visitorMesh.position.set(0, 0, 0)
+                        }
+                
+                        var dir = new THREE.Vector3( e.direction.x, e.direction.y, e.direction.z );
+                        visitorMesh.quaternion.setFromUnitVectors(axis, dir.normalize());
+                        // visitorMesh.position.set(e.position.x, e.position.y, e.position.z)
                     }
                 });
             }
@@ -192,6 +198,24 @@ export default class ManageGame extends Component {
             outlinePass.selectedObjects = []
             markerMesh.visible = true;
             markerMesh.position.copy(closest.point);
+        }
+
+        function checkLightHits() {
+            const thetaThreshold = Math.PI/16;
+
+            var lightVector = new THREE.Vector3();
+            var playerVector = new THREE.Vector3();
+            for (var i = visitors.children.length - 1; i >= 0; i--) {
+                for (var j = lights.children.length - 1; j >= 0; j--) {
+                    lights.children[j].material.color.setHex(0xffffff);
+                    lightVector.subVectors( lights.children[j].position, visitors.children[i].position ).normalize();
+                    playerVector.copy( visitors.children[i].up ).applyQuaternion( visitors.children[i].quaternion).negate();
+                    
+                    if (Math.acos(playerVector.dot(lightVector)) < thetaThreshold) {
+                        lights.children[j].material.color.setHex(0xffff00);
+                    } 
+                }
+            }
         }
 
         function render() {
@@ -218,8 +242,10 @@ export default class ManageGame extends Component {
                 }
             }
 
-            composer.render(scene, camera);
+            checkLightHits();
 
+            composer.render(scene, camera);
+            
             requestAnimationFrame(render);
         }
 

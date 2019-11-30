@@ -1,10 +1,10 @@
-import SocketIO from "socket.io";
-import GameServer from "./GameServer";
-
 import logger from "./utils/Logger";
 
-import Light from './utils/Light';
-import { Raycaster, Vector2, Vector3, BufferGeometry, Float32BufferAttribute, Points } from "three";
+import GameServer from "./GameServer";
+import Layout from "./utils/Layout";
+import Light from "./utils/Light";
+
+import SocketIO from "socket.io";
 
 export default class LightShow {
     private gallium: SocketIO.Server;
@@ -12,9 +12,7 @@ export default class LightShow {
     private frameQueue: number[];
     private frame: number[];
 
-    private lights: Light[];
-
-    constructor(private gs: GameServer) {
+    constructor(private layout: Layout, gs: GameServer) {
         this.gallium = SocketIO(gs.getHTTPServer(), {
             path: '/gallium',
         });
@@ -27,7 +25,7 @@ export default class LightShow {
             return next(new Error('authentication error'));
         });
 
-        this.gallium.on('connection', this.userConnection.bind(this));
+        this.gallium.on('connection', this.galliumConnection.bind(this));
 
         this.frameQueue = new Array<number>(512);
         this.frameQueue.fill(-1);
@@ -37,10 +35,10 @@ export default class LightShow {
 
         // Technically the max update is 44Hz, or 23ms.
         // Due to the network, we're running at 20 Hz, or 50ms
-        // Every 10 seconds send a keyframe. The others can just be updates
+        // Every 5 seconds send a keyframe. The others can just be updates
         let count = 0;
         setInterval(() => {
-            if (count > 200) {
+            if (count > 100) {
                 this.emitKeyframe();
                 count = 0;
             } else {
@@ -48,25 +46,34 @@ export default class LightShow {
                 count += 1;
             }
         }, 50);
-
-        this.lights = new Array<Light>();
     }
 
-    public addToChannel(channel: number, value: number) {
+    public uniformAdd(amount: number) {
+        for (let i = 0; i < 512; i++) {
+            this.addToChannel(i, amount);
+        }
+    }
+
+    public setChannel(channel: number, value: number) {
         if (channel < 0 || channel >= 512) {
             logger.error("Trying to set channel out of range.");
             return;
         }
 
-        // Add value to frame, clamped in range, and log the update in the queue
-        const newValue = Math.min(Math.max(this.frame[channel] + value, 0), 255);
-        // If the value changed, update the frame and add to updates queue
+        // Clamp to avoid overflow errors
+        const newValue = Math.min(Math.max(value, 0), 255);
+
+         // If the value changed, update the frame and add to updates queue
         if (newValue !== this.frame[channel]) {
             this.frameQueue[channel] = this.frame[channel] = newValue;
         }
     }
 
-    private userConnection(socket: any) {
+    public addToChannel(channel: number, value: number) {
+        this.setChannel(channel, this.frame[channel] + value);
+    }
+
+    private galliumConnection(socket: any) {
         logger.debug('gallium connected')
         socket.join('gallium');
 
@@ -117,22 +124,6 @@ export default class LightShow {
     }
 
     public getLights(): Light[] {
-        return this.lights;
-    }
-
-    public get3DLights(): Points {
-        const geometry = new BufferGeometry();
-
-        const positions: any[] = [];
-
-        this.lights.forEach((light: Light) => {
-            positions.push( light.position.x, 0, light.position.y);
-        })
-
-        geometry.setAttribute( 'position', new Float32BufferAttribute( positions, 3 ) );
-
-        geometry.computeBoundingSphere();
-
-        return new Points( geometry );
+        return this.layout.getLights();
     }
 }

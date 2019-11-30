@@ -8,7 +8,6 @@ import { Router, json } from 'express';
 import cors from 'cors'
 
 import Light from "./Light";
-import UserManager from '../UserManager';
 import logger from './Logger';
 
 export default class Layout {
@@ -18,7 +17,7 @@ export default class Layout {
     private db: any;
     private router: Router;
 
-    constructor(title: string, resourcePath: string, adminManager: UserManager) {
+    constructor(title: string, resourcePath: string) {
         this.title = title;
         this.resourcePath = resourcePath;
 
@@ -81,5 +80,9 @@ export default class Layout {
         } else {
             logger.info("Invalid light. Not adding.");
         }
+    }
+
+    public getLights(): Light[] {
+        return this.db.get('lights')
     }
 }

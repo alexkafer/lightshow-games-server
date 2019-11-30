@@ -53,7 +53,8 @@ export default class UserManager extends EventEmitter {
         this.admin.emit("players", this.getPlayers().map((u: User) => {
             return {
                 position: u.getPosition(),
-                direction: u.getDirection()
+                direction: u.getDirection(),
+                id: u.currentSocket.id
             }
         }))
     }
