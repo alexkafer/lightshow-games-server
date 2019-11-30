@@ -27,10 +27,10 @@ export default class Wand extends Game {
         this.lightShow.uniformAdd(-51);
 
         // Check for light hits
-        var lightVector = new Vector3();
+        const lightVector = new Vector3();
         this.userManager.getPlayers().forEach((user: User) => {
-            var playerPosition = user.getPosition();
-            var playerVector = user.getDirection();
+            const playerPosition = user.getPosition();
+            const playerVector = user.getDirection();
 
             if (playerPosition && playerVector) {
                 this.lightShow.getLights().forEach((light: Light) => {
@@ -40,7 +40,7 @@ export default class Wand extends Game {
                     // and the light. If it is in range, light it up.
                     if (Math.acos(playerVector.dot(lightVector)) < THETA_THRESHOLD) {
                         this.lightShow.addToChannel(light.channel, 255);
-                    } 
+                    }
                 })
             }
         });
@@ -65,27 +65,6 @@ export default class Wand extends Game {
                 user.setDirection(payload.alpha, payload.beta, payload.gamma);
             } else {
                 logger.warn("Received bad orientation payload", payload);
-            }
-        }
-    }
-
-    private hitLights(user: User) {
-        const origin = user.getPosition();
-        const direction = user.getDirection();
-        if (origin && direction) {
-           
-            var lightVector = new Vector3();
-            var playerVector = new Vector3();
-            for (var i = visitors.children.length - 1; i >= 0; i--) {
-                for (var j = lights.children.length - 1; j >= 0; j--) {
-                    lights.children[j].material.color.setHex(0xffffff);
-                    lightVector.subVectors( lights.children[j].position, visitors.children[i].position ).normalize();
-                    playerVector.copy( visitors.children[i].up ).applyQuaternion( visitors.children[i].quaternion).negate();
-                    
-                    if (Math.acos(playerVector.dot(lightVector)) < thetaThreshold) {
-                        lights.children[j].material.color.setHex(0xffff00);
-                    } 
-                }
             }
         }
     }
