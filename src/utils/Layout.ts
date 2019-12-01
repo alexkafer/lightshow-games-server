@@ -102,7 +102,7 @@ export default class Layout {
     }
 
     private createLight(l: any) {
-        if (l.x && l.y && l.z && l.channel) {
+        if (l.x !== undefined && l.y !== undefined && l.z !== undefined && l.channel !== undefined) {
             const light = new Light(uuid(), l.x, l.y, l.z, l.channel)
             logger.info("Adding light.");
             this.db.get('lights').push(light).write();

@@ -318,9 +318,6 @@ export default class ManageGame extends Component {
     render() {
         return (
             <>
-            <div className="visualizer" >
-                <canvas ref={ref => (this.mount = ref)}></canvas>
-            </div>
             <div className="light">
                 <h4>{this.state.selectedLight.id ? this.state.selectedLight.id : "Select a light"}</h4>
                 <Form.Group as={Row} controlId="formPlaintextEmail">
@@ -335,6 +332,9 @@ export default class ManageGame extends Component {
                     Save
                 </Button>
                 <Button variant="danger" disabled={this.state.selectedLight.id == null} onClick={this.deleteLight}>Delete</Button>
+            </div>
+            <div className="visualizer" >
+                <canvas ref={ref => (this.mount = ref)}></canvas>
             </div>
             </>
         ); 
