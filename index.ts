@@ -1,37 +1,51 @@
 // ##############
 /* Welcome to ... the game server ..., dun dun dun */
 // ##############
+import path from 'path';
 
-import GameServer from './server/GameServer'
-import GameManager from './server/GameManager'
-import UserManager from './server/UserManager';
-import LightShow from './server/LightShow';
+import GameServer from './src/GameServer'
+import GameManager from './src/GameManager'
+import UserManager from './src/UserManager'
+import LightShow from './src/LightShow'
 
-// Register Games
-import Wand from './server/games/Wand'
-import Pong from './server/games/Pong';
+// Games
+import Wand from './src/games/Wand'
+import Pong from './src/games/Pong'
+import Manual from './src/games/Manual'
 
-import AdminPortal from './server/admin/Admin';
+/** Interaction Interface */
+import AdminAPI from './src/api/Admin'
+import Layout from './src/utils/Layout'
 
+/** CREATE SERVER */
 const server = new GameServer();
-const lightShow = new LightShow(server);
 
+/** CREATE LAYOUT */
+const lightshow2019 = path.join(__dirname, "..", "src", "layouts", "lightshow2019");
+const layout = new Layout(lightshow2019);
+const lightShow = new LightShow(layout, server);
+
+/** REGISTER GAMES */
 const WAND: string = 'WAND';
 GameManager.registerGame(new Wand(lightShow), WAND);
 
 const PONG: string = 'PONG';
 GameManager.registerGame(new Pong(lightShow), PONG);
 
+const MANUAL: string = 'MANUAL';
+GameManager.registerGame(new Manual(lightShow), MANUAL);
+
+/** CREATE MANAGERS */
 const userManager = new UserManager(server);
 const gameManager = new GameManager(userManager);
 
-const adminPortal = new AdminPortal(gameManager);
-adminPortal.initRoutes(server.getExpressApp());
+/** SERVE ADMIN API */
+server.use('/games', new AdminAPI(gameManager).getRouter());
+server.use('/layout', layout.getRouter());
+server.useAdmin(path.join(__dirname,  "..", 'admin', 'build'));
 
+/** START DEFAULT GAME */
 gameManager.startGame(WAND);
 
-server.serveClient();
-
-// start the server
-const port = Number(process.env.PORT || 2567) + Number(process.env.NODE_APP_INSTANCE || 0);
-server.start(port);
+/** START SERVE */
+server.start(process.env.PORT || 2567);

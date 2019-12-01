@@ -1,0 +1,15 @@
+{
+    "database": "db.json",
+    "map": "map.jpg",
+    "scene": "plaza.obj",
+    "size": {
+        "x": 73.7812,
+        "y": 16.1300,
+        "z": 64
+    }, 
+    "center": {
+        "x": 0.8434,
+        "y": 3.7964,
+        "z": 2.7360
+    }
+}
