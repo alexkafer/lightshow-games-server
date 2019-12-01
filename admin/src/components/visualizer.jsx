@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import {Form, Button, Row, Col} from 'react-bootstrap'
 import * as THREE from "three";
 
 import axios from 'axios'
@@ -10,9 +11,27 @@ import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass';
 import { OutlinePass } from 'three/examples/jsm/postprocessing/OutlinePass';
 
 import openSocket from 'socket.io-client';
-const socket = openSocket('http://localhost:2567', {path: '/admin'});
+const adminSocket = openSocket('http://localhost:2567', {path: '/admin'});
+const galliumSocket = openSocket('http://localhost:2567', {
+    path: '/gallium',
+    query: {
+        token: 'lightshow2',
+    },
+});
 
 export default class ManageGame extends Component {
+
+    constructor() {
+        super();
+
+        this.state = {
+            selectedLight: {
+                id: null,
+                channel: ''
+            },
+            lightChannel: 0
+        }
+    }
 
     componentDidMount() {
         var mouse = new THREE.Vector2();
@@ -80,11 +99,7 @@ export default class ManageGame extends Component {
         var markerMesh = new THREE.Mesh(new THREE.SphereGeometry(0.2, 32, 32), new THREE.MeshStandardMaterial({ color: 0xff0000}));
         scene.add(markerMesh);
         
-        canvas.addEventListener( 'mousemove', onMouseMove, false );
-        canvas.addEventListener( 'mouseup', onMouseUp, false );
-        canvas.addEventListener( 'mousedown', onMouseDown, false );
-        
-        function resizeRendererToDisplaySize(renderer) {
+        const resizeRendererToDisplaySize = (renderer) => {
             const canvas = renderer.domElement;
             const width = canvas.clientWidth;
             const height = canvas.clientHeight;
@@ -96,7 +111,7 @@ export default class ManageGame extends Component {
             return needResize;
         }
 
-        function onMouseMove( event ) {
+        const onMouseMove = ( event ) => {
             event.preventDefault();
 
             mouse.x = ( event.layerX / canvas.clientWidth ) * 2 - 1;
@@ -105,19 +120,26 @@ export default class ManageGame extends Component {
             adding = false;
         }
 
-        function onMouseDown( event ) {
+        const onMouseDown = ( event ) => {
             adding = true;
         }
 
-
-        function onMouseUp( ) {
-            if (adding) {
+        const onMouseUp = ( ) => {
+            if (model) {
                 raycaster.setFromCamera( mouse, camera );
+                var intersects = raycaster.intersectObjects( [model, lights], true);
 
-                if (model) {
-                    var intersects = raycaster.intersectObjects( [model, lights], true);
-                
-                    if ( intersects.length > 0 && intersects[0].object.parent === model) {
+                if (intersects.length > 0) {
+                    if ( intersects[0].object.parent === lights) {
+                        const clickedLight = intersects[0].object.userData;
+
+                        console.log("Clicked a light:", clickedLight);
+
+                        this.setState({
+                            selectedLight: clickedLight,
+                            lightChannel: clickedLight.channel
+                        })
+                    } else if (adding && intersects[0].object.parent === model) {
                         const newLightPos = intersects[0].point;
 
                         console.log("Submitting new light:", newLightPos);
@@ -126,11 +148,11 @@ export default class ManageGame extends Component {
                             x: newLightPos.x,
                             y: newLightPos.y,
                             z: newLightPos.z,
-                            channel: 5
+                            channel: this.state.lightChannel
                         }).then((res) => {
                             handleLights(res.data);
                         }); 
-                    }
+                    } 
                 }
             }
         }
@@ -145,11 +167,12 @@ export default class ManageGame extends Component {
             handleLights(res.data);
         };
 
-        function handleLights(lightsArray) {
+        const handleLights = (lightsArray) => {
             if (lightsArray instanceof Array) {
                 console.log(lightsArray);
                 lightsArray.forEach((light) => {
                     var lightMesh = new THREE.Mesh(new THREE.SphereGeometry(1, 32, 32), new THREE.MeshStandardMaterial({ color: 0xffffff}));
+                    lightMesh.name = "channel_" + light.channel;
                     lights.add(lightMesh);
                     lightMesh.position.set(light.position.x, light.position.y, light.position.z);
                     lightMesh.userData = light;
@@ -157,7 +180,15 @@ export default class ManageGame extends Component {
             }
         }
 
-        socket.on('players', (msg) => {
+        canvas.addEventListener( 'mousemove', onMouseMove, false );
+        canvas.addEventListener( 'mouseup', onMouseUp, false );
+        canvas.addEventListener( 'mousedown', onMouseDown, false );
+
+        adminSocket.on('players', (msg) => {
+            for (var i = visitors.children.length - 1; i >= 0; i--) {
+                visitors.remove(visitors.children[i]);
+            }
+
             if (msg instanceof Array) {
                 msg.forEach(e => {
                     if (e.direction && e.position && e.id) {
@@ -165,24 +196,34 @@ export default class ManageGame extends Component {
 
                         var visitorMesh = visitors.getObjectByName(e.id);
                         if (!visitorMesh) {
-                            console.log("New user!");
                             visitorMesh = new THREE.Mesh(new THREE.ConeGeometry(0.4, 1), new THREE.MeshStandardMaterial({ color: 0x00ffff}));
                             visitorMesh.name = e.id;
                             visitorMesh.add(new THREE.ArrowHelper( axis,  new THREE.Vector3(0, 0, 0), 20, 0xffff00));
                             visitors.add( visitorMesh );
 
-                            visitorMesh.position.set(0, 0, 0)
+                            // visitorMesh.position.set(0, 0, 0)
                         }
                 
                         var dir = new THREE.Vector3( e.direction.x, e.direction.y, e.direction.z );
                         visitorMesh.quaternion.setFromUnitVectors(axis, dir.normalize());
-                        // visitorMesh.position.set(e.position.x, e.position.y, e.position.z)
+                        visitorMesh.position.set(e.position.x, e.position.y, e.position.z)
                     }
                 });
             }
         })
 
-        function handleIntersection(closest) {
+        galliumSocket.on('frame', (frame) => {
+            scene.traverse((child) => {
+                if (child.userData.channel in frame) {
+                    child.material.color.setHSL(
+                        child.userData.channel / 12, 
+                        1, 
+                        frame[child.userData.channel] / 255);
+                }
+            });
+        })
+
+        const handleIntersection = (closest) => {
             if (closest.object === markerMesh) {
                 return;
             }
@@ -200,25 +241,26 @@ export default class ManageGame extends Component {
             markerMesh.position.copy(closest.point);
         }
 
-        function checkLightHits() {
-            const thetaThreshold = Math.PI/16;
+        // function checkLightHits() {
+        //     const thetaThreshold = Math.PI/16;
 
-            var lightVector = new THREE.Vector3();
-            var playerVector = new THREE.Vector3();
-            for (var i = visitors.children.length - 1; i >= 0; i--) {
-                for (var j = lights.children.length - 1; j >= 0; j--) {
-                    lights.children[j].material.color.setHex(0xffffff);
-                    lightVector.subVectors( lights.children[j].position, visitors.children[i].position ).normalize();
-                    playerVector.copy( visitors.children[i].up ).applyQuaternion( visitors.children[i].quaternion).negate();
+        //     var lightVector = new THREE.Vector3();
+        //     var playerVector = new THREE.Vector3();
+        //     for (var i = visitors.children.length - 1; i >= 0; i--) {
+        //         for (var j = lights.children.length - 1; j >= 0; j--) {
                     
-                    if (Math.acos(playerVector.dot(lightVector)) < thetaThreshold) {
-                        lights.children[j].material.color.setHex(0xffff00);
-                    } 
-                }
-            }
-        }
+        //             lights.children[j].material.color.setHex(0xffffff);
+        //             lightVector.subVectors( lights.children[j].position, visitors.children[i].position ).normalize();
+        //             playerVector.copy( visitors.children[i].up ).applyQuaternion( visitors.children[i].quaternion).negate();
+                    
+        //             if (Math.acos(playerVector.dot(lightVector)) < thetaThreshold) {
+        //                 lights.children[j].material.color.setHex(0xffff00);
+        //             } 
+        //         }
+        //     }
+        // }
 
-        function render() {
+        const renderThree = () => {
 
             if (resizeRendererToDisplaySize(renderer)) {
                 const canvas = renderer.domElement;
@@ -242,22 +284,59 @@ export default class ManageGame extends Component {
                 }
             }
 
-            checkLightHits();
+            // checkLightHits();
 
             composer.render(scene, camera);
             
-            requestAnimationFrame(render);
+            requestAnimationFrame(renderThree.bind(this));
         }
 
-        render();
+        renderThree();
         updateLights();
+
+        this.deleteLight = () => {
+            axios.delete("/layout/lights/" + this.state.selectedLight.id).then(() => {
+                updateLights();
+            });
+        }
+    
+        this.updateChannel = () => {
+            return axios.post("/layout/lights/" + this.state.selectedLight.id, {
+                channel: this.state.lightChannel
+            }).then(() => {
+                updateLights();
+            });
+        }
+    }
+
+    handleChange(e){
+        this.setState({
+            lightChannel: e.target.value
+        });
     }
 
     render() {
         return (
+            <>
             <div className="visualizer" >
                 <canvas ref={ref => (this.mount = ref)}></canvas>
             </div>
+            <div className="light">
+                <h4>{this.state.selectedLight.id ? this.state.selectedLight.id : "Select a light"}</h4>
+                <Form.Group as={Row} controlId="formPlaintextEmail">
+                    <Form.Label column sm="2">
+                    Channel
+                    </Form.Label>
+                    <Col sm="10">
+                        <Form.Control size="lg" type="text" value={this.state.lightChannel} onChange={this.handleChange.bind(this)}/>
+                    </Col>
+                </Form.Group>
+                <Button variant="primary" disabled={this.state.selectedLight.id == null} onClick={this.updateChannel}>
+                    Save
+                </Button>
+                <Button variant="danger" disabled={this.state.selectedLight.id == null} onClick={this.deleteLight}>Delete</Button>
+            </div>
+            </>
         ); 
     }
 }

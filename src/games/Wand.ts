@@ -23,17 +23,19 @@ export default class Wand extends Game {
 
     loop() {
 
-        // Game loops 5 times per second. This will fade away the entire show over 1 second.
-        this.lightShow.uniformAdd(-51);
+        // This will fade away the entire show over 1 second.
+        this.lightShow.uniformAdd( - (255 / LightShow.FRAME_RATE));
 
         // Check for light hits
         const lightVector = new Vector3();
+        const lights = this.lightShow.layout.getLights();
+
         this.userManager.getPlayers().forEach((user: User) => {
             const playerPosition = user.getPosition();
             const playerVector = user.getDirection();
 
             if (playerPosition && playerVector) {
-                this.lightShow.getLights().forEach((light: Light) => {
+                lights.forEach((light: Light) => {
                     lightVector.subVectors( light.position, playerPosition ).normalize();
 
                     // Compute the dot product to find the angle between the player
@@ -52,9 +54,12 @@ export default class Wand extends Game {
 
     action(user: User, message: string, payload: any) {
         if (message === "position") {
-            if (payload.x && payload.y) {
+            if (payload.x !== undefined && payload.y !== undefined) {
+
                 logger.verbose("Setting player position", payload);
-                user.setPosition(payload.x, payload.y);
+                const pos = this.lightShow.layout.getScenePosition(payload.x, payload.y);
+                logger.verbose("which translates to: " + pos.x + " " + pos.y + " " + pos.z);
+                user.setPosition(pos);
             } else {
                 logger.warn("Received bad position payload", payload);
             }

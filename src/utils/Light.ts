@@ -1,5 +1,4 @@
 import { Vector3 } from "three";
-import uuid from 'uuid';
 
 export default class Light {
     public id: string;

@@ -1,5 +1,6 @@
 import path from 'path';
 import uuid from 'uuid';
+import {readFile} from 'fs';
 
 import lowdb from "lowdb";
 import { default as FileAsync } from "lowdb/adapters/FileAsync";
@@ -9,22 +10,46 @@ import cors from 'cors'
 
 import Light from "./Light";
 import logger from './Logger';
+import { Vector3 } from 'three';
 
 export default class Layout {
-    public title: string;
-    public resourcePath: string;
-
     private db: any;
     private router: Router;
+    private map: string;
+    private scene: string;
+    private size: Vector3;
+    private center: Vector3;
 
-    constructor(title: string, resourcePath: string) {
-        this.title = title;
-        this.resourcePath = resourcePath;
-
-        this.initDatabase(path.join(resourcePath, title + '.json'));
-
+    constructor(private resourcePath: string, config: string = "config.json") {
         this.router = Router();
-        this.setupRouter();
+
+        readFile(path.join(resourcePath, config), this.handleJSONReference.bind(this));
+    }
+
+    private handleJSONReference(err: NodeJS.ErrnoException, data: Buffer) {
+        if (err) {
+            throw err;
+        }
+        const reference = JSON.parse(data.toString());
+        logger.info("Loading Layout");
+
+        logger.info("map: " + reference.map);
+        this.map = reference.map;
+
+        logger.info("scene: " + reference.scene);
+        this.scene = reference.scene;
+
+        logger.info("size: " + reference.size.x + " " + reference.size.y + " " + reference.size.z);
+        this.size = new Vector3(reference.size.x,reference.size.y,reference.size.z);
+
+        logger.info("center: " + reference.center.x + " " + reference.center.y + " " + reference.center.z);
+        this.center = new Vector3(reference.center.x,reference.center.y, reference.center.z);
+
+        logger.info("database: " + reference.database);
+
+        this.initDatabase(path.join(this.resourcePath, reference.database)).then(() => {
+            this.setupRouter();
+        });
     }
 
     private setupRouter() {
@@ -32,11 +57,11 @@ export default class Layout {
         this.router.use(cors());
 
         this.router.get('/map',  (req, res) => {
-            res.sendFile(path.join(this.resourcePath, 'map.svg'));
+            res.sendFile(path.join(this.resourcePath, this.map));
         });
 
         this.router.get('/scene',  (req, res) => {
-            res.sendFile(path.join(this.resourcePath, 'scene.obj'));
+            res.sendFile(path.join(this.resourcePath, this.scene));
         });
 
         this.router.get('/lights',  (req, res) => {
@@ -54,6 +79,10 @@ export default class Layout {
             this.createLight(light);
 
             res.json(this.db.get('lights'))
+        });
+
+        this.router.post('/lights/:id',  (req, res) => {
+            res.json(this.db.get('lights').find({id: req.params.id}).assign({channel: req.body.channel}).value());
         });
 
         this.router.delete('/lights/:id',  (req, res) => {
@@ -83,6 +112,19 @@ export default class Layout {
     }
 
     public getLights(): Light[] {
-        return this.db.get('lights')
+        if (this.db) {
+            return this.db.get('lights').value()
+        } else {
+            return [];
+        }
     }
-}
+
+    // Coords are x, y positions on a 2D map, with:
+    // 0,0 being the center of the image
+    // positive y being north, positive x being east
+    public getScenePosition(x: number, y: number): Vector3 {
+        const height = 0;
+        // For the 2019 obj scene, y is the height, negative z is north.
+        return new Vector3(x * this.size.x / 2, height, -y * this.size.z / 2).add(this.center);
+    }
+ }

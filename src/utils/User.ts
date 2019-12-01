@@ -1,5 +1,5 @@
 import { Socket } from "socket.io";
-import { Vector3, Euler } from "three";
+import { Vector3 } from "three";
 
 export default class User {
     currentSocket: Socket;
@@ -9,10 +9,11 @@ export default class User {
 
     constructor(socket: Socket) {
         this.currentSocket = socket;
+        this.position = new Vector3();
     }
 
-    public setPosition(x: number, y: number) {
-        this.position = new Vector3(x, 0, y);
+    public setPosition(position: Vector3) {
+        this.position.copy(position);
     }
 
     public getPosition(): Vector3 {
@@ -28,7 +29,7 @@ export default class User {
         const z = Math.cos(yaw)*Math.cos(pitch);
         const y = Math.sin(pitch);
 
-        this.direction = new Vector3(x, y, z);
+        this.direction = new Vector3(x, y, z).normalize();
     }
 
     public getDirection(): Vector3 {
