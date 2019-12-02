@@ -2,6 +2,7 @@
     "database": "db.json",
     "map": "map.jpg",
     "scene": "plaza.obj",
+    "hmap": "hmap.ppm",
     "size": {
         "x": 73.7812,
         "y": 16.1300,

@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "prebuild": "tslint -c tslint.json -p tsconfig.json --fix && npm run clean",
-    "build": "tsc && cd admin && npm build",
+    "build": "tsc",
     "prestart": "npm run build",
     "start": "NODE_ENV=dev node .",
     "clean": "rm -rf dist",
@@ -19,8 +19,10 @@
     "@types/lodash": "^4.14.149",
     "@types/lowdb": "^1.0.9",
     "@types/uuid": "^3.4.6",
+    "bootstrap": "^4.4.1",
     "cors": "^2.8.5",
     "express": "^4.17.1",
+    "get-pixels": "^3.3.2",
     "http-proxy-middleware": "^0.20.0",
     "lodash": "^4.17.15",
     "lowdb": "^1.0.0",
@@ -36,26 +38,5 @@
     "@types/socket.io": "^2.1.4",
     "tslint": "^6.0.0-beta0",
     "typescript": "^3.6.4"
-  },
-  "eslintConfig": {
-    "extends": "react-app"
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  },
-  "presets": [
-    "@babel/preset-react"
-  ],
-  "plugins": [
-    "@babel/plugin-proposal-class-properties"
-  ]
+  }
 }

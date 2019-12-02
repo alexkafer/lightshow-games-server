@@ -7,7 +7,7 @@
   },
   "client-server": { 
     "source": 443,
-    "target": 3001,
+    "target": 3000,
     "cert": "./certificates/cert.pem",
     "key": "./certificates/key.pem"
   }

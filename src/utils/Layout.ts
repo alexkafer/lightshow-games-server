@@ -10,19 +10,26 @@ import cors from 'cors'
 
 import Light from "./Light";
 import logger from './Logger';
-import { Vector3 } from 'three';
+import { Vector3, Object3D, Raycaster } from 'three';
+
+import { OBJLoader2 } from 'three/examples/jsm/loaders/OBJLoader2.js';
 
 export default class Layout {
     private db: any;
     private router: Router;
     private map: string;
-    private scene: string;
+    private scenePath: string;
     private size: Vector3;
     private center: Vector3;
 
+    private sceneObject: Object3D;
+    private raycaster: Raycaster;
+    private down: Vector3;
+
     constructor(private resourcePath: string, config: string = "config.json") {
         this.router = Router();
-
+        this.raycaster = new Raycaster();
+        this.down = new Vector3(0, -1, 0);
         readFile(path.join(resourcePath, config), this.handleJSONReference.bind(this));
     }
 
@@ -37,7 +44,7 @@ export default class Layout {
         this.map = reference.map;
 
         logger.info("scene: " + reference.scene);
-        this.scene = reference.scene;
+        this.scenePath = reference.scene;
 
         logger.info("size: " + reference.size.x + " " + reference.size.y + " " + reference.size.z);
         this.size = new Vector3(reference.size.x,reference.size.y,reference.size.z);
@@ -49,6 +56,10 @@ export default class Layout {
 
         this.initDatabase(path.join(this.resourcePath, reference.database)).then(() => {
             this.setupRouter();
+            const objLoader = new OBJLoader2();
+            objLoader.load(path.join(this.resourcePath, reference.scene), (root: Object3D) => {
+                this.sceneObject = root;
+            });
         });
     }
 
@@ -61,7 +72,7 @@ export default class Layout {
         });
 
         this.router.get('/scene',  (req, res) => {
-            res.sendFile(path.join(this.resourcePath, this.scene));
+            res.sendFile(path.join(this.resourcePath, this.scenePath));
         });
 
         this.router.get('/lights',  (req, res) => {
@@ -123,8 +134,25 @@ export default class Layout {
     // 0,0 being the center of the image
     // positive y being north, positive x being east
     public getScenePosition(x: number, y: number): Vector3 {
-        const height = 0;
         // For the 2019 obj scene, y is the height, negative z is north.
-        return new Vector3(x * this.size.x / 2, height, -y * this.size.z / 2).add(this.center);
+        const positions = new Vector3(x * this.size.x / 2, this.size.y, -y * this.size.z / 2).add(this.center);
+
+        return this.snapToFloor(positions, 1);
+    }
+
+    private snapToFloor(pos: Vector3, offset: number) {
+        if (this.sceneObject) {
+            this.raycaster.set(pos, this.down);
+            const intersections = this.raycaster.intersectObject(this.sceneObject, true);
+
+            if (intersections.length > 0) {
+                pos.setY(intersections[0].point.y + offset);
+            }
+
+            return pos;
+        } else {
+            logger.info("Scene not loaded. Unable to get height.");
+            return pos;
+        }
     }
  }
