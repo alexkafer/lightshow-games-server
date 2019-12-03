@@ -12,11 +12,11 @@ import { OutlinePass } from 'three/examples/jsm/postprocessing/OutlinePass';
 
 import openSocket from 'socket.io-client';
 const adminSocket = openSocket({path: '/admin'});
-const galliumSocket = openSocket({path: '/gallium',
-    query: {
-        token: 'lightshow2',
-    },
-});
+// const galliumSocket = openSocket({path: '/gallium',
+//     query: {
+//         token: 'lightshow2',
+//     },
+// });
 
 export default class ManageGame extends Component {
 
@@ -168,7 +168,6 @@ export default class ManageGame extends Component {
 
         const handleLights = (lightsArray) => {
             if (lightsArray instanceof Array) {
-                console.log(lightsArray);
                 lightsArray.forEach((light) => {
                     var lightMesh = new THREE.Mesh(new THREE.SphereGeometry(0.25, 32, 32), new THREE.MeshStandardMaterial({ color: 0xffffff}));
                     lightMesh.name = "channel_" + light.channel;
@@ -209,16 +208,16 @@ export default class ManageGame extends Component {
             }
         })
 
-        galliumSocket.on('frame', (frame) => {
-            scene.traverse((child) => {
-                if (child.userData.channel in frame) {
-                    child.material.color.setHSL(
-                        child.userData.channel / 12, 
-                        1, 
-                        frame[child.userData.channel] / 255);
-                }
-            });
-        })
+        // galliumSocket.on('frame', (frame) => {
+        //     scene.traverse((child) => {
+        //         if (child.userData.channel in frame) {
+        //             child.material.color.setHSL(
+        //                 child.userData.channel / 12, 
+        //                 1, 
+        //                 frame[child.userData.channel] / 255);
+        //         }
+        //     });
+        // })
 
         const handleIntersection = (closest) => {
             if (closest.object === markerMesh) {
