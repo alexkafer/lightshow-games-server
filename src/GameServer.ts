@@ -14,15 +14,11 @@ export default class GameServer {
 
         const config = JSON.parse(readFileSync(configPath).toString());
 
-        const privateKey = readFileSync(config.certificate.key, 'utf8');
-        const certificate = readFileSync(config.certificate.cert, 'utf8');
+        const key = readFileSync(config.certificate.key, 'utf8');
+        const cert = readFileSync(config.certificate.cert, 'utf8');
         const ca = readFileSync(config.certificate.ca, 'utf8');
 
-        const credentials = {
-            key: privateKey,
-            cert: certificate,
-            ca: ca
-        };
+        const credentials = { key, cert, ca };
 
         // initialize a simple  server
         this.httpServer = createServer(credentials, this.app);

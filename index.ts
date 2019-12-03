@@ -18,7 +18,7 @@ import AdminAPI from './src/api/Admin'
 import Layout from './src/utils/Layout'
 
 /** CREATE SERVER */
-const server = new GameServer(path.join(__dirname,  "..", 'certificates'));
+const server = new GameServer(path.join(__dirname,  "..", 'config.json'));
 
 /** CREATE LAYOUT */
 const lightshow2019 = path.join(__dirname, "..", "static", "layouts", "lightshow2019");

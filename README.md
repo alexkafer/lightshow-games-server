@@ -18,7 +18,9 @@ To generate SSL certificates, use
 The client 
 
 ### SSL Certificates
-Since iOS requires the client to be running in a secure context before releasing motion data, the entire stack needs to be secured. The game server has HTTPS baked in, but requires the certificates to be stored in `certificates/cert.pem` and `certificates/key.pem`. There are two options for creating these certificates.
+Since iOS requires the client to be running in a secure context before releasing motion data, the entire stack needs to be secured. The game server has HTTPS baked in, but requires the certificates to be configured in `config.json`. A blank template has been created `config.blank.json`. 
+
+There are two options for creating these certificates.
 
 #### Localhost
 https://github.com/FiloSottile/mkcert
@@ -38,3 +40,4 @@ For Let's Encrypt, which provides free SSL certificates with an already trusted 
 `sudo apt-get install certbot`
 
 Generating the SSL certificate.
+`sudo certbot certonly --standalone`
