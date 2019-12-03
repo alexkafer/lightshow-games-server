@@ -51,4 +51,4 @@ server.useAdmin(path.join(__dirname,  "..", 'admin', 'build'));
 gameManager.startGame(WAND);
 
 /** START SERVE */
-server.start(process.env.PORT || 2567);
+server.start(process.env.PORT);

@@ -11,9 +11,8 @@ import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass';
 import { OutlinePass } from 'three/examples/jsm/postprocessing/OutlinePass';
 
 import openSocket from 'socket.io-client';
-const adminSocket = openSocket('http://localhost:2567', {path: '/admin'});
-const galliumSocket = openSocket('http://localhost:2567', {
-    path: '/gallium',
+const adminSocket = openSocket({path: '/admin'});
+const galliumSocket = openSocket({path: '/gallium',
     query: {
         token: 'lightshow2',
     },
@@ -90,7 +89,7 @@ export default class ManageGame extends Component {
 
         {
             const objLoader = new OBJLoader2();
-            objLoader.load('http://localhost:2567/layout/scene', (root) => {
+            objLoader.load('/layout/scene', (root) => {
                 model = root;
                 scene.add(root);
             });

@@ -36,7 +36,7 @@ export default class GameServer {
         }
 
         this.httpServer.listen(port, () => {
-            logger.info(`Game Server started on port ${port}`);
+            logger.info(`Game Server started on port ${port}. URL is probably:  ${process.env.SERVER_URL}`);
         });
     }
 
