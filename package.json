@@ -8,7 +8,8 @@
     "prebuild": "tslint -c tslint.json -p tsconfig.json --fix && yarn clean",
     "build": "tsc && cd admin && yarn build",
     "prestart": "yarn build",
-    "start": "NODE_ENV=dev node -r esm .",
+    "dev": "NODE_ENV=dev node -r esm .",
+    "start": "NODE_ENV=dev PORT=443 sudo node -r esm .",
     "clean": "rm -rf dist"
   },
   "author": "Alex Kafer",
