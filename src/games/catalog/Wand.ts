@@ -1,12 +1,12 @@
 
-import logger from '../utils/Logger';
+import logger from '../../utils/Logger';
 
 import {Vector3} from 'three';
 
-import LightShow from '../LightShow';
-import Game from '../utils/Game'
-import User from '../utils/User'
-import Light from '../utils/Light'
+import LightShow from '../../LightShow';
+import Game from '../Game'
+import Player from '../Player'
+import Light from '../../utils/Light'
 
 const THETA_THRESHOLD = Math.PI/16;
 
@@ -30,7 +30,7 @@ export default class Wand extends Game {
         const lightVector = new Vector3();
         const lights = this.lightShow.layout.getLights();
 
-        this.userManager.getPlayers().forEach((user: User) => {
+        this.userManager.getPlayers().forEach((user: Player) => {
             const playerPosition = user.getPosition();
             const playerVector = user.getDirection();
 
@@ -52,7 +52,7 @@ export default class Wand extends Game {
         logger.info("Shutdown wand");
     }
 
-    action(user: User, message: string, payload: any) {
+    action(user: Player, message: string, payload: any) {
         if (message === "position") {
             if (payload.x !== undefined && payload.y !== undefined) {
 

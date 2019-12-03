@@ -7,17 +7,17 @@ import {config} from 'dotenv';
 config();
 
 import GameServer from './src/GameServer'
-import GameManager from './src/GameManager'
-import UserManager from './src/UserManager'
+import GameManager from './src/games/GameManager'
+import PlayerManager from './src/PlayerManager'
 import LightShow from './src/LightShow'
 
 // Games
-import Wand from './src/games/Wand'
-import Pong from './src/games/Pong'
-import Manual from './src/games/Manual'
+import Wand from './src/games/catalog/Wand'
+import Pong from './src/games/catalog/Pong'
+import Manual from './src/games/catalog/Manual'
 
 /** Interaction Interface */
-import AdminAPI from './src/api/Admin'
+import AdminAPI from './src/games/Admin'
 import Layout from './src/utils/Layout'
 
 /** CREATE SERVER */
@@ -39,8 +39,8 @@ const MANUAL: string = 'MANUAL';
 GameManager.registerGame(new Manual(lightShow), MANUAL);
 
 /** CREATE MANAGERS */
-const userManager = new UserManager(server);
-const gameManager = new GameManager(userManager);
+const playerManager = new PlayerManager(server);
+const gameManager = new GameManager(playerManager);
 
 /** SERVE ADMIN API */
 server.use('/games', new AdminAPI(gameManager).getRouter());

@@ -1,17 +1,14 @@
 import EventEmitter from 'events';
 
-import User from './utils/User';
-import Light from './utils/Light';
+import Player from './games/Player';
 import SocketIO from "socket.io";
 import GameServer from './GameServer';
 
 import logger from './utils/Logger'
-import { Vector3 } from 'three';
 
-
-export default class UserManager extends EventEmitter {
-    private visitors: Map<string, User>;
-    private players: Map<string, User>;
+export default class PlayerManager extends EventEmitter {
+    private visitors: Map<string, Player>;
+    private players: Map<string, Player>;
 
     private io: SocketIO.Server;
     private admin: SocketIO.Server;
@@ -31,7 +28,7 @@ export default class UserManager extends EventEmitter {
         this.admin.on('connection', this.adminConnection.bind(this));
     }
 
-    public getPlayers(): User[] {
+    public getPlayers(): Player[] {
         return Array.from(this.players.values())
     }
 
@@ -39,18 +36,18 @@ export default class UserManager extends EventEmitter {
         return this.players.size;
     }
 
-    public addPlayer(user: User) {
+    public addPlayer(user: Player) {
         this.players.set(user.currentSocket.id, user);
     }
 
-    public removePlayer(user: User) {
+    public removePlayer(user: Player) {
         if (this.players.has(user.currentSocket.id)) {
             this.players.delete(user.currentSocket.id);
         }
     }
 
     public updateAdmin() {
-        this.admin.emit("players", this.getPlayers().map((u: User) => {
+        this.admin.emit("players", this.getPlayers().map((u: Player) => {
             return {
                 position: u.getPosition(),
                 direction: u.getDirection(),
@@ -61,7 +58,6 @@ export default class UserManager extends EventEmitter {
 
     private userConnection(socket: any) {
         logger.debug('a user connected');
-        socket.join('users');
 
         this.addUser(socket);
 
@@ -84,7 +80,7 @@ export default class UserManager extends EventEmitter {
     }
 
     public addUser(socket: SocketIO.Socket) {
-        const user = new User(socket);
+        const user = new Player(socket);
         this.visitors.set(socket.id, user);
         logger.http("[CONNECTED] User with id: " + socket.id);
         this.emit("userJoined", user);

@@ -1,11 +1,9 @@
 import { Router, json } from 'express';
-import SocketIO from "socket.io";
-
 import cors from 'cors'
 
-import GameManager from '../GameManager';
-import GameServer from '../GameServer';
+import GameManager from './GameManager';
 
+// TODO, merge this with the socket admin api
 export default class Admin {
     private gameManager: GameManager;
     private router: Router;
@@ -26,14 +24,6 @@ export default class Admin {
                 "success": true,
                 "current": this.gameManager.getCurrentGame(),
                 "registered": GameManager.listGames()
-            });
-        });
-
-
-        this.router.get('/queue',  (req, res) => {
-            res.json({
-                "success": true,
-                "queue": this.gameManager.listQueue()
             });
         });
 

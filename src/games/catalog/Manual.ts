@@ -1,8 +1,8 @@
-import Game from '../utils/Game'
-import User from "../utils/User"
-import LightShow from '../LightShow';
+import Game from '../Game'
+import Player from "../Player"
+import LightShow from '../../LightShow';
 
-import logger from '../utils/Logger';
+import logger from '../../utils/Logger';
 
 export default class Manual extends Game {
 
@@ -21,7 +21,7 @@ export default class Manual extends Game {
         logger.info("Shutting down manual");
     }
 
-    action(user: User, message: string, payload: any): void {
+    action(user: Player, message: string, payload: any): void {
         if (message === "allOn") {
             this.lightShow.allOn();
         }

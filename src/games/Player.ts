@@ -1,7 +1,11 @@
+import logger from '../utils/Logger';
+
 import { Socket } from "socket.io";
 import { Vector3 } from "three";
 
-export default class User {
+import { IQueueable } from '../utils/SlottedQueue';
+
+export default class Player implements IQueueable {
     currentSocket: Socket;
 
     private position: Vector3 | undefined;
@@ -34,5 +38,12 @@ export default class User {
 
     public getDirection(): Vector3 {
         return this.direction;
+    }
+
+    notifyPosition(position: number): void {
+        if (this.currentSocket.connected) {
+            logger.http('Telling ' + this.currentSocket.id + " that they are now " + position + " in line");
+            this.currentSocket.emit("queue", position);
+          }
     }
 }
