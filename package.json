@@ -8,8 +8,7 @@
     "prebuild": "tslint -c tslint.json -p tsconfig.json --fix && yarn clean",
     "build": "tsc && cd admin && yarn build",
     "prestart": "yarn build",
-    "dev": "NODE_ENV=dev node -r esm .",
-    "start": "NODE_ENV=dev PORT=443 sudo node -r esm .",
+    "start": "node -r esm .",
     "clean": "rm -rf dist"
   },
   "author": "Alex Kafer",
@@ -17,6 +16,7 @@
   "dependencies": {
     "bootstrap": "^4.4.1",
     "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
     "esm": "^3.2.25",
     "express": "^4.17.1",
     "lowdb": "^1.0.0",

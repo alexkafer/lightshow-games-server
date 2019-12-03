@@ -3,6 +3,9 @@
 // ##############
 import path from 'path';
 
+import {config} from 'dotenv';
+config();
+
 import GameServer from './src/GameServer'
 import GameManager from './src/GameManager'
 import UserManager from './src/UserManager'
@@ -18,7 +21,7 @@ import AdminAPI from './src/api/Admin'
 import Layout from './src/utils/Layout'
 
 /** CREATE SERVER */
-const server = new GameServer(path.join(__dirname,  "..", 'config.json'));
+const server = new GameServer();
 
 /** CREATE LAYOUT */
 const lightshow2019 = path.join(__dirname, "..", "static", "layouts", "lightshow2019");
