@@ -85,8 +85,6 @@ export default class ManageGame extends Component {
             scene.add(light.target);
         }
 
-        
-
         {
             const objLoader = new OBJLoader2();
             objLoader.load('/layout/scene', (root) => {
@@ -149,6 +147,8 @@ export default class ManageGame extends Component {
                             z: newLightPos.z,
                             channel: this.state.lightChannel
                         }).then((res) => {
+                            this.setState({lightChannel: Number(this.state.lightChannel) + 1});
+                            console.log("New Channel: " + this.state.lightChannel)
                             handleLights(res.data);
                         }); 
                     } 
@@ -170,7 +170,7 @@ export default class ManageGame extends Component {
             if (lightsArray instanceof Array) {
                 console.log(lightsArray);
                 lightsArray.forEach((light) => {
-                    var lightMesh = new THREE.Mesh(new THREE.SphereGeometry(1, 32, 32), new THREE.MeshStandardMaterial({ color: 0xffffff}));
+                    var lightMesh = new THREE.Mesh(new THREE.SphereGeometry(0.25, 32, 32), new THREE.MeshStandardMaterial({ color: 0xffffff}));
                     lightMesh.name = "channel_" + light.channel;
                     lights.add(lightMesh);
                     lightMesh.position.set(light.position.x, light.position.y, light.position.z);
@@ -199,8 +199,6 @@ export default class ManageGame extends Component {
                             visitorMesh.name = e.id;
                             visitorMesh.add(new THREE.ArrowHelper( axis,  new THREE.Vector3(0, 0, 0), 20, 0xffff00));
                             visitors.add( visitorMesh );
-
-                            // visitorMesh.position.set(0, 0, 0)
                         }
                 
                         var dir = new THREE.Vector3( e.direction.x, e.direction.y, e.direction.z );
@@ -240,25 +238,6 @@ export default class ManageGame extends Component {
             markerMesh.position.copy(closest.point);
         }
 
-        // function checkLightHits() {
-        //     const thetaThreshold = Math.PI/16;
-
-        //     var lightVector = new THREE.Vector3();
-        //     var playerVector = new THREE.Vector3();
-        //     for (var i = visitors.children.length - 1; i >= 0; i--) {
-        //         for (var j = lights.children.length - 1; j >= 0; j--) {
-                    
-        //             lights.children[j].material.color.setHex(0xffffff);
-        //             lightVector.subVectors( lights.children[j].position, visitors.children[i].position ).normalize();
-        //             playerVector.copy( visitors.children[i].up ).applyQuaternion( visitors.children[i].quaternion).negate();
-                    
-        //             if (Math.acos(playerVector.dot(lightVector)) < thetaThreshold) {
-        //                 lights.children[j].material.color.setHex(0xffff00);
-        //             } 
-        //         }
-        //     }
-        // }
-
         const renderThree = () => {
 
             if (resizeRendererToDisplaySize(renderer)) {
@@ -283,10 +262,7 @@ export default class ManageGame extends Component {
                 }
             }
 
-            // checkLightHits();
-
             composer.render(scene, camera);
-            
             requestAnimationFrame(renderThree.bind(this));
         }
 

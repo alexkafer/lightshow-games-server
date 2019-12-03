@@ -1,4 +1,4 @@
-import path, { parse } from 'path';
+import path from 'path';
 import uuid from 'uuid';
 import { readFileSync } from 'fs';
 
@@ -22,6 +22,7 @@ export default class Layout {
     private size: Vector3;
     private center: Vector3;
 
+    private patch: Map<number, number>
     private sceneObject: Object3D;
     private raycaster: Raycaster;
     private down: Vector3;
@@ -46,8 +47,21 @@ export default class Layout {
         logger.info("center: " + reference.center.x + " " + reference.center.y + " " + reference.center.z);
         this.center = new Vector3(reference.center.x,reference.center.y, reference.center.z);
 
-        logger.info("database: " + reference.database);
+        logger.info("patch: " + reference.patch);
+        this.patch = new Map();
+        const patchObj = JSON.parse(readFileSync(path.join(resourcePath, reference.patch)).toString());
 
+        if (patchObj.patch !== undefined) {
+            patchObj.patch.forEach((patch: any) => {
+                this.patch.set(patch.internalChannel, patch.dmxChannel);
+            });
+
+            logger.info("Loaded " + this.patch.size + " patches.");
+        } else {
+            logger.error("JSON patch appears to be malformed.");
+        }
+
+        logger.info("database: " + reference.database);
         this.initDatabase(path.join(this.resourcePath, reference.database)).then(() => {
             this.setupRouter();
 
@@ -125,6 +139,10 @@ export default class Layout {
         } else {
             return [];
         }
+    }
+
+    public lookupPatch(internalChannel: number) {
+        return this.patch.get(internalChannel);
     }
 
     // Coords are x, y positions on a 2D map, with:

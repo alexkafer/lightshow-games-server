@@ -30,8 +30,8 @@ export default class Manual extends Game {
             this.lightShow.allOff();
         }
 
-        if (message === "add") {
-            this.lightShow.addToChannel(payload, payload);
+        if (message === "set") {
+            this.lightShow.setChannel(payload.channel, payload.value);
         }
     }
 }

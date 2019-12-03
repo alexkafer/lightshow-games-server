@@ -60,7 +60,7 @@ export class SlottedQueue<T extends IQueueable>  extends EventEmitter {
 
       return false;
     }
-    
+
     private updatePositions(after: number = 0) {
       for (let index = after; index < this._queue.length; index++) {
         this._queue[index].notifyPosition( index + 1);

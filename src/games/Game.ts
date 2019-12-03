@@ -1,6 +1,6 @@
 import Player from './Player'
 import LightShow from '../LightShow';
-import UserManager from '../PlayerManager';
+import PlayerManager from '../PlayerManager';
 
 export default abstract class Game {
     public title: string;
@@ -8,22 +8,22 @@ export default abstract class Game {
     public playerMax: number;
 
     protected lightShow: LightShow;
-    protected userManager: UserManager;
+    protected players: PlayerManager;
 
     abstract setup() : void;
     abstract loop() : void;
     abstract shutdown() : void;
-    abstract action(user: Player, message: string, payload: any) : void;
+    abstract action(player: Player, message: string, payload: any) : void;
 
-    constructor(lightShow: LightShow, title: string, listenFor: string[], playerMax: number = Infinity) {
+    constructor(lightShow: LightShow, title: string, listenFor: string[], playerMax: number) {
         this.title = title;
         this.listenFor = listenFor;
         this.playerMax = playerMax;
         this.lightShow = lightShow;
     }
 
-    public initialize(userManager: UserManager) {
-        this.userManager = userManager;
+    public initialize(playerManager: PlayerManager) {
+        this.players = playerManager;
         this.setup();
     }
 }

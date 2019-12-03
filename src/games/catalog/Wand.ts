@@ -8,7 +8,7 @@ import Game from '../Game'
 import Player from '../Player'
 import Light from '../../utils/Light'
 
-const THETA_THRESHOLD = Math.PI/16;
+const THETA_THRESHOLD = Math.PI/8;
 
 export default class Wand extends Game {
 
@@ -30,7 +30,7 @@ export default class Wand extends Game {
         const lightVector = new Vector3();
         const lights = this.lightShow.layout.getLights();
 
-        this.userManager.getPlayers().forEach((user: Player) => {
+        this.players.getPlayers().forEach((user: Player) => {
             const playerPosition = user.getPosition();
             const playerVector = user.getDirection();
 

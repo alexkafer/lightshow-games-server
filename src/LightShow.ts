@@ -45,9 +45,9 @@ export default class LightShow {
     }
 
     public uniformAdd(amount: number) {
-        for (let i = 0; i < 512; i++) {
-            this.addToChannel(i, amount);
-        }
+        this.layout.getLights().forEach((light) => {
+            this.addToChannel(light.channel, amount);
+        });
     }
 
     public setChannel(channel: number, value: number) {
@@ -102,9 +102,13 @@ export default class LightShow {
         });
     }
 
-    private queueUpdate(channel: number, value: number) {
+    private queueUpdate(internalChannel: number, value: number, shouldPatch: boolean = true) {
+        const channel = shouldPatch ? this.layout.lookupPatch(internalChannel) : internalChannel;
+
+        if (channel === undefined) return;
+
         if (channel < 0 || channel >= 512) {
-            logger.error("Trying to set channel out of range.");
+            logger.error("Trying to set channel out of range: " + channel);
             return;
         }
 

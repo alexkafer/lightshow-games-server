@@ -3,6 +3,7 @@
     "map": "map.jpg",
     "scene": "plaza.obj",
     "hmap": "hmap.ppm",
+    "patch": "patch.json",
     "size": {
         "x": 73.7812,
         "y": 16.1300,

@@ -1,10 +1,8 @@
+import logger from '../utils/Logger';
+
 import Game from './Game'
 import Player from './Player';
-
-import {SlottedQueue} from '../utils/SlottedQueue';
-import UserManager from '../PlayerManager';
-
-import logger from '../utils/Logger';
+import PlayerManager from '../PlayerManager';
 
 export default class GameManager {
 
@@ -19,15 +17,13 @@ export default class GameManager {
     }
 
     private currentGame: Game | undefined;
-    private playerQueue: SlottedQueue<Player>;
-    private playerManager: UserManager;
+    private playerManager: PlayerManager;
 
-    constructor(um: UserManager) {
+    constructor(um: PlayerManager) {
         this.playerManager = um;
-        this.playerQueue = new SlottedQueue();
 
-        um.on('userJoined', this.onNewUser.bind(this));
-        um.on('userLeft', this.onUserLeft.bind(this));
+        um.on('visitorJoined', this.onNewVisitor.bind(this));
+        um.on('playerStarted', this.startPlayer.bind(this));
     }
 
     public getCurrentGame(): string {
@@ -42,6 +38,7 @@ export default class GameManager {
             // Turn off previous game, if it exists
             if (this.currentGame) {
                 this.currentGame.shutdown();
+                this.playerManager.kickPlayers();
             }
 
             // Update the current game, and set it up
@@ -49,13 +46,7 @@ export default class GameManager {
 
             if (this.currentGame) {
                 this.currentGame.initialize(this.playerManager);
-
-                // Create currentGame.playerMax number of player slots
-                logger.info(this.currentGame.title + " calls for " + this.currentGame.playerMax + " players");
-                this.playerQueue.clearSlots();
-                for (let i = 0; i < this.currentGame.playerMax; i++) {
-                    this.fillPlayer();
-                }
+                this.playerManager.createSlots(this.currentGame.playerMax);
             }
 
             this.playerManager.notifyGameUpdate(this.currentGame.title);
@@ -70,48 +61,23 @@ export default class GameManager {
         setInterval(this.playerManager.updateAdmin.bind(this.playerManager), 50);
     }
 
-    private async fillPlayer() {
-        logger.info('Asking for player');
-        const newPlayer = await this.playerQueue.getNextPlayer();
-        this.playerManager.addPlayer(newPlayer);
-        logger.info('Player added');
-
+    public startPlayer(newPlayer: Player) {
         // Attach listeners for the game
         this.currentGame.listenFor.forEach((action) => {
             newPlayer.currentSocket.on(action, (payload: any) => {
-                if (this.currentGame) {
+                if (this.validateAction(action, newPlayer.currentSocket.id)) {
                     this.currentGame.action(newPlayer, action, payload);
                 }
             });
         });
+    }
 
-        // Allow the user to manually end the game
-        newPlayer.currentSocket.on("end", () => {
-            if (this.currentGame) {
-                this.playerManager.removePlayer(newPlayer);
-            }
-        });
-
-        newPlayer.currentSocket.emit("started");
+    private validateAction(action: string, player: string): boolean {
+        return this.currentGame && this.currentGame.listenFor.indexOf(action) >= 0 && this.playerManager.isPlayer(player);
     }
 
     // Triggers a new user navigates to the website
-    public onNewUser(user: Player): void {
-        user.currentSocket.emit("game", this.currentGame.title);
-
-        user.currentSocket.on("join", () => {
-            this.playerQueue.push(user);
-        });
-
-        user.currentSocket.on("cancel", () => {
-            this.playerQueue.remove(user);
-        });
-    }
-
-    public onUserLeft(user: Player): void {
-        if (!this.playerQueue.remove(user)) {
-            this.playerManager.removePlayer(user);
-            this.fillPlayer();
-        }
+    public onNewVisitor(visitor: Player): void {
+        visitor.currentSocket.emit("game", this.getCurrentGame());
     }
 }
