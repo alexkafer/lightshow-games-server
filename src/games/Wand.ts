@@ -66,7 +66,7 @@ export default class Wand extends Game {
         }
 
         if (message === "odometry") {
-            if (payload.alpha && payload.beta && payload.gamma) {
+            if (payload.alpha !== undefined && payload.beta !== undefined && payload.gamma !== undefined) {
                 user.setDirection(payload.alpha, payload.beta, payload.gamma);
             } else {
                 logger.warn("Received bad orientation payload", payload);
