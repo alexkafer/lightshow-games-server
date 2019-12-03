@@ -12,7 +12,7 @@ global.XMLHttpRequest = XMLHttpRequest;
 
 import path from 'path';
 import uuid from 'uuid';
-import {readFile} from 'fs';
+import { readFileSync } from 'fs';
 
 import lowdb from "lowdb";
 import { default as FileAsync } from "lowdb/adapters/FileAsync";
@@ -42,14 +42,8 @@ export default class Layout {
         this.router = Router();
         this.raycaster = new Raycaster();
         this.down = new Vector3(0, -1, 0);
-        readFile(path.join(resourcePath, config), this.handleJSONReference.bind(this));
-    }
 
-    private handleJSONReference(err: NodeJS.ErrnoException, data: Buffer) {
-        if (err) {
-            throw err;
-        }
-        const reference = JSON.parse(data.toString());
+        const reference = JSON.parse(readFileSync(path.join(resourcePath, config)).toString());
         logger.info("Loading Layout");
 
         logger.info("map: " + reference.map);
@@ -75,6 +69,7 @@ export default class Layout {
             });
         });
     }
+
 
     private setupRouter() {
         this.router.use(json());

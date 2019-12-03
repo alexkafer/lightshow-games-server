@@ -29,6 +29,7 @@ admin/build
 .env.production.local
 
 certificates
+config.json
 
 npm-debug.log*
 npm-error.log*

@@ -9,15 +9,19 @@ export default class GameServer {
     private app: Express
     private httpServer?: Server
 
-    constructor(certs: string) {
-       this.app = express();
+    constructor(configPath: string) {
+        this.app = express();
 
-       const privateKey = readFileSync(path.join(certs, 'key.pem'));
-       const certificate = readFileSync(path.join(certs, 'cert.pem'));
+        const config = JSON.parse(readFileSync(configPath).toString());
 
-       const credentials = {
+        const privateKey = readFileSync(config.certificate.key, 'utf8');
+        const certificate = readFileSync(config.certificate.cert, 'utf8');
+        const ca = readFileSync(config.certificate.ca, 'utf8');
+
+        const credentials = {
             key: privateKey,
-            cert: certificate
+            cert: certificate,
+            ca: ca
         };
 
         // initialize a simple  server
