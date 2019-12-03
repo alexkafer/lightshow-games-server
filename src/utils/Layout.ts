@@ -1,16 +1,4 @@
-import { XMLHttpRequest } from 'xmlhttprequest-ts';
-
-declare global {
-    namespace NodeJS {
-      interface Global {
-        XMLHttpRequest: typeof XMLHttpRequest;
-      }
-    }
-}
-
-global.XMLHttpRequest = XMLHttpRequest;
-
-import path from 'path';
+import path, { parse } from 'path';
 import uuid from 'uuid';
 import { readFileSync } from 'fs';
 
@@ -62,11 +50,12 @@ export default class Layout {
 
         this.initDatabase(path.join(this.resourcePath, reference.database)).then(() => {
             this.setupRouter();
+
             const objLoader = new OBJLoader();
-            objLoader.load(path.join(this.resourcePath, reference.scene), (root: Object3D) => {
-                logger.info("Loaded object with " + root)
-                this.sceneObject = root;
-            });
+
+            const objStructure = readFileSync(path.join(this.resourcePath, reference.scene));
+            this.sceneObject = objLoader.parse(objStructure.toString());
+            logger.info("Loaded scene! " + this.sceneObject.name)
         });
     }
 
