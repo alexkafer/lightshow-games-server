@@ -1,5 +1,5 @@
 Arguments: 
-  /usr/local/bin/node /usr/local/Cellar/yarn/1.19.0/libexec/bin/yarn.js start
+  /usr/local/bin/node /usr/local/Cellar/yarn/1.19.0/libexec/bin/yarn.js add @types/three-obj-loader
 
 PATH: 
   /opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Library/TeX/texbin:/Library/Frameworks/Mono.framework/Versions/Current/Commands:/Applications/Wireshark.app/Contents/MacOS:/opt/local/bin:/opt/local/sbin
@@ -14,12 +14,17 @@ Platform:
   darwin x64
 
 Trace: 
-  SyntaxError: /Users/alexkafer/Development/lightshow-games-server/package.json: Unexpected token } in JSON at position 1188
-      at JSON.parse (<anonymous>)
-      at /usr/local/Cellar/yarn/1.19.0/libexec/lib/cli.js:1625:59
-      at Generator.next (<anonymous>)
-      at step (/usr/local/Cellar/yarn/1.19.0/libexec/lib/cli.js:304:30)
-      at /usr/local/Cellar/yarn/1.19.0/libexec/lib/cli.js:315:13
+  Error: https://registry.yarnpkg.com/@types%2fthree-obj-loader: Not found
+      at Request.params.callback [as _callback] (/usr/local/Cellar/yarn/1.19.0/libexec/lib/cli.js:66918:18)
+      at Request.self.callback (/usr/local/Cellar/yarn/1.19.0/libexec/lib/cli.js:140539:22)
+      at Request.emit (events.js:198:13)
+      at Request.<anonymous> (/usr/local/Cellar/yarn/1.19.0/libexec/lib/cli.js:141511:10)
+      at Request.emit (events.js:198:13)
+      at IncomingMessage.<anonymous> (/usr/local/Cellar/yarn/1.19.0/libexec/lib/cli.js:141433:12)
+      at Object.onceWrapper (events.js:286:20)
+      at IncomingMessage.emit (events.js:203:15)
+      at endReadableNT (_stream_readable.js:1145:12)
+      at process._tickCallback (internal/process/next_tick.js:63:19)
 
 npm manifest: 
   {
@@ -31,7 +36,7 @@ npm manifest:
       "prebuild": "tslint -c tslint.json -p tsconfig.json --fix && npm run clean",
       "build": "tsc",
       "prestart": "npm run build",
-      "start": "NODE_ENV=dev node .",
+      "start": "NODE_ENV=dev node -r esm .",
       "clean": "rm -rf dist",
       "proxy": "local-ssl-proxy --config local-ssl-proxy-config.json"
     },
@@ -45,6 +50,7 @@ npm manifest:
       "@types/uuid": "^3.4.6",
       "bootstrap": "^4.4.1",
       "cors": "^2.8.5",
+      "esm": "^3.2.25",
       "express": "^4.17.1",
       "get-pixels": "^3.3.2",
       "http-proxy-middleware": "^0.20.0",
@@ -52,6 +58,7 @@ npm manifest:
       "lowdb": "^1.0.0",
       "socket.io": "^2.3.0",
       "three": "^0.110.0",
+      "three-obj-loader": "^1.1.3",
       "uuid": "^3.3.3",
       "winston": "^3.2.1"
     },
@@ -62,7 +69,7 @@ npm manifest:
       "@types/socket.io": "^2.1.4",
       "tslint": "^6.0.0-beta0",
       "typescript": "^3.6.4"
-    },
+    }
   }
 
 yarn manifest: 
@@ -780,6 +787,11 @@ Lockfile:
       optionator "^0.8.1"
     optionalDependencies:
       source-map "~0.6.1"
+  
+  esm@^3.2.25:
+    version "3.2.25"
+    resolved "https://registry.yarnpkg.com/esm/-/esm-3.2.25.tgz#342c18c29d56157688ba5ce31f8431fbb795cc10"
+    integrity sha512-U1suiZ2oDVWv4zPO56S0NcR5QriEahGtdN2OR6FiOG4WJvcjBVFB0qI4+eKoWFH483PKGuLuu6V8Z4T5g63UVA==
   
   esprima@^2.7.1:
     version "2.7.3"
@@ -2022,6 +2034,11 @@ Lockfile:
     version "1.0.0"
     resolved "https://registry.yarnpkg.com/text-hex/-/text-hex-1.0.0.tgz#69dc9c1b17446ee79a92bf5b884bb4b9127506f5"
     integrity sha512-uuVGNWzgJ4yhRaNSiubPY7OjISw4sw4E5Uv0wbjp+OzcbmVU/rsT8ujgcXJhn9ypzsgr5vlzpPqP+MBBKcGvbg==
+  
+  three-obj-loader@^1.1.3:
+    version "1.1.3"
+    resolved "https://registry.yarnpkg.com/three-obj-loader/-/three-obj-loader-1.1.3.tgz#4d540a256fcf2a59a6c6e0cd51a623efd76fd87d"
+    integrity sha512-usuOOTAqeM7J7dyae/I9ltFnfy1g47Hsr3byTvBTeH9LYz5vb2i8rLd2Hi1HEr0MbB5H4p9YrqFaDGcijXEVNw==
   
   three@^0.110.0:
     version "0.110.0"

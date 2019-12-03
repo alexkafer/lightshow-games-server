@@ -1,18 +1,27 @@
 import express, { Express, RequestHandler } from 'express'
-import { createServer, Server } from 'http';
+import { createServer, Server } from 'https';
 
 import path from 'path';
+import { readFileSync } from 'fs';
 import logger from './utils/Logger';
 
 export default class GameServer {
     private app: Express
     private httpServer?: Server
 
-    constructor() {
+    constructor(certs: string) {
        this.app = express();
 
+       const privateKey = readFileSync(path.join(certs, 'key.pem'));
+       const certificate = readFileSync(path.join(certs, 'cert.pem'));
+
+       const credentials = {
+            key: privateKey,
+            cert: certificate
+        };
+
         // initialize a simple  server
-        this.httpServer = createServer(this.app);
+        this.httpServer = createServer(credentials, this.app);
     }
 
     public getHTTPServer() {

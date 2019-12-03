@@ -1,3 +1,15 @@
+import { XMLHttpRequest } from 'xmlhttprequest-ts';
+
+declare global {
+    namespace NodeJS {
+      interface Global {
+        XMLHttpRequest: typeof XMLHttpRequest;
+      }
+    }
+}
+
+global.XMLHttpRequest = XMLHttpRequest;
+
 import path from 'path';
 import uuid from 'uuid';
 import {readFile} from 'fs';
@@ -10,9 +22,9 @@ import cors from 'cors'
 
 import Light from "./Light";
 import logger from './Logger';
-import { Vector3, Object3D, Raycaster } from 'three';
 
-import { OBJLoader2 } from 'three/examples/jsm/loaders/OBJLoader2.js';
+import { Vector3, Object3D, Raycaster } from 'three';
+import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
 
 export default class Layout {
     private db: any;
@@ -56,8 +68,9 @@ export default class Layout {
 
         this.initDatabase(path.join(this.resourcePath, reference.database)).then(() => {
             this.setupRouter();
-            const objLoader = new OBJLoader2();
+            const objLoader = new OBJLoader();
             objLoader.load(path.join(this.resourcePath, reference.scene), (root: Object3D) => {
+                logger.info("Loaded object with " + root)
                 this.sceneObject = root;
             });
         });

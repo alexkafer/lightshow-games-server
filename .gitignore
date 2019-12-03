@@ -9,6 +9,7 @@ node_modules
 
 # production
 /dist
+admin/build
 
 # testing
 /coverage
@@ -30,6 +31,9 @@ node_modules
 certificates
 
 npm-debug.log*
+npm-error.log*
+yarn-debug.log*
+yarn-error.log*
 
 combined.log
 errors.log

@@ -18,10 +18,10 @@ import AdminAPI from './src/api/Admin'
 import Layout from './src/utils/Layout'
 
 /** CREATE SERVER */
-const server = new GameServer();
+const server = new GameServer(path.join(__dirname,  "..", 'certificates'));
 
 /** CREATE LAYOUT */
-const lightshow2019 = path.join(__dirname, "..", "src", "layouts", "lightshow2019");
+const lightshow2019 = path.join(__dirname, "..", "static", "layouts", "lightshow2019");
 const layout = new Layout(lightshow2019);
 const lightShow = new LightShow(layout, server);
 

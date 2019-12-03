@@ -4,12 +4,12 @@
   "description": "node server that runs the light show game server",
   "main": "dist/index.js",
   "scripts": {
+    "postinstall": "cd admin && npm install",
     "prebuild": "tslint -c tslint.json -p tsconfig.json --fix && npm run clean",
-    "build": "tsc",
+    "build": "tsc && cd admin && npm run build",
     "prestart": "npm run build",
-    "start": "NODE_ENV=dev node .",
+    "start": "NODE_ENV=dev node -r esm .",
     "clean": "rm -rf dist",
-    "proxy": "local-ssl-proxy --config local-ssl-proxy-config.json"
   },
   "author": "Alex Kafer",
   "license": "ISC",
@@ -21,6 +21,7 @@
     "@types/uuid": "^3.4.6",
     "bootstrap": "^4.4.1",
     "cors": "^2.8.5",
+    "esm": "^3.2.25",
     "express": "^4.17.1",
     "get-pixels": "^3.3.2",
     "http-proxy-middleware": "^0.20.0",
@@ -29,7 +30,9 @@
     "socket.io": "^2.3.0",
     "three": "^0.110.0",
     "uuid": "^3.3.3",
-    "winston": "^3.2.1"
+    "winston": "^3.2.1",
+    "xmlhttprequest": "^1.8.0",
+    "xmlhttprequest-ts": "^1.0.1"
   },
   "devDependencies": {
     "@ef-carbon/tspm": "^2.2.5",
