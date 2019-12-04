@@ -23,8 +23,8 @@ export default class Wand extends Game {
 
     loop() {
 
-        // This will fade away the entire show over 1 second.
-        this.lightShow.uniformAdd( - (255 / LightShow.FRAME_RATE));
+        // This will fade up the entire show over 1 second.
+        this.lightShow.uniformAdd( (255 / LightShow.FRAME_RATE));
 
         // Check for light hits
         const lightVector = new Vector3();
@@ -41,7 +41,7 @@ export default class Wand extends Game {
                     // Compute the dot product to find the angle between the player
                     // and the light. If it is in range, light it up.
                     if (Math.acos(playerVector.dot(lightVector)) < THETA_THRESHOLD) {
-                        this.lightShow.addToChannel(light.channel, 255);
+                        this.lightShow.setChannel(light.channel, 0);
                     }
                 })
             }

@@ -39,7 +39,7 @@ export default class LightShow {
 
         // The frame is what we currently expect the light show to be displaying
         this.frame = new Array<number>(512);
-        this.frame.fill(0);
+        this.frame.fill(255);
 
         this.start();
     }
