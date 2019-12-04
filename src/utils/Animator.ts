@@ -38,7 +38,7 @@ export default class Animator  {
             }
         })
 
-        logger.info("Animated " + Object.keys(updates).length + " channels.");
+        // logger.info("Animated " + Object.keys(updates).length + " channels.");
 
         return updates;
     }
