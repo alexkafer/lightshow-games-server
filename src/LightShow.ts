@@ -4,6 +4,7 @@ import GameServer from "./GameServer";
 import Layout from "./utils/Layout";
 
 import SocketIO from "socket.io";
+import { verbose } from "winston";
 
 const NO_UPDATE: number = -1;
 
@@ -128,11 +129,12 @@ export default class LightShow {
     }
 
     private commitUpdates() {
-        const diff: { [key: number]: number; } = {};
+        const diff: { [channel: number]: number; } = {};
 
         // At this point, these are DMX channels
         for (let channel = 1; channel < this.frameQueue.length; channel++) {
             if (this.frameQueue[channel] !== NO_UPDATE) {
+                logger.verbose("Updating channel " + channel);
                 this.frame[channel] = diff[channel] = this.frameQueue[channel];
                 this.frameQueue[channel] = NO_UPDATE;
             };
@@ -151,10 +153,10 @@ export default class LightShow {
 
     private emitUpdates() {
         const payload = this.commitUpdates();
+        logger.verbose(JSON.stringify(payload))
         const changes = Object.keys(payload).length;
         if (changes > 0) {
             logger.debug("Sending payload with " + changes + " updates");
-            logger.verbose(JSON.stringify(payload));
             this.gallium.emit('frame', payload);
         }
     }
