@@ -7,14 +7,20 @@ import LightShow from '../../LightShow';
 import Game from '../Game'
 import Player from '../Player'
 import Light from '../../utils/Light'
+import Animator from '../../utils/Animator'
 
 const THETA_THRESHOLD = Math.PI/8;
 
 export default class Wand extends Game {
 
+    private animator: Animator;
+    private messageFinished: boolean;
 
     constructor(lightShow: LightShow) {
         super(lightShow, "Wand", ["position", "odometry"], 2);
+
+        this.animator = new Animator();
+        this.messageFinished = false;
     }
 
     setup() {
@@ -23,8 +29,6 @@ export default class Wand extends Game {
 
     loop() {
         // This will fade up the entire show over 1 second.
-        this.lightShow.uniformAdd(-(255 / LightShow.FRAME_RATE));
-
         // Check for light hits
         const lightVector = new Vector3();
         const lights = this.lightShow.layout.getLights();
@@ -40,11 +44,23 @@ export default class Wand extends Game {
                     // Compute the dot product to find the angle between the player
                     // and the light. If it is in range, light it up.
                     if (Math.acos(playerVector.dot(lightVector)) < THETA_THRESHOLD) {
-                        this.lightShow.setChannel(light.channel, 255);
+
+                        // Turn the light on, and animate down to zero
+                        this.animator.startLinearTransition([light.channel], 255, 0, -(255 / LightShow.FRAME_RATE))
                     }
                 })
             }
         });
+
+        this.lightShow.set(this.animator.animate());
+
+        if (this.messageFinished) {
+            this.messageFinished = false;
+            this.lightShow.displayPixelMessage("WAND", 2000, true).then(() => {
+                    this.messageFinished = true;
+            });
+        }
+        
     }
 
     shutdown() {
