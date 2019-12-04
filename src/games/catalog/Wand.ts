@@ -40,7 +40,7 @@ export default class Wand extends Game {
                     // Compute the dot product to find the angle between the player
                     // and the light. If it is in range, light it up.
                     if (Math.acos(playerVector.dot(lightVector)) < THETA_THRESHOLD) {
-                        this.lightShow.setChannel(light.channel, 0);
+                        this.lightShow.setChannel(light.channel, 255);
                     }
                 })
             }

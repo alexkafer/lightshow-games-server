@@ -134,7 +134,7 @@ export default class LightShow {
         // At this point, these are DMX channels
         for (let channel = 1; channel < this.frameQueue.length; channel++) {
             if (this.frameQueue[channel] !== NO_UPDATE) {
-                logger.verbose("Updating channel " + channel);
+
                 this.frame[channel] = diff[channel] = this.frameQueue[channel];
                 this.frameQueue[channel] = NO_UPDATE;
             };
