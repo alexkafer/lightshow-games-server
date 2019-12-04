@@ -46,7 +46,7 @@ export default class Wand extends Game {
                     if (Math.acos(playerVector.dot(lightVector)) < THETA_THRESHOLD) {
                         // Turn the light on, and animate down to zero
                         this.lightShow.setChannel(light.channel, 255);
-                        this.animator.startLinearTransition([light.channel], 255, 0, -(255 / LightShow.FRAME_RATE))
+                        this.animator.startLinearTransition([light.channel], 255, 0, (255 / LightShow.FRAME_RATE))
                     }
                 })
             }
