@@ -153,7 +153,6 @@ export default class LightShow {
 
     private emitUpdates() {
         const payload = this.commitUpdates();
-        logger.verbose(JSON.stringify(payload))
         const changes = Object.keys(payload).length;
         if (changes > 0) {
             logger.debug("Sending payload with " + changes + " updates");
