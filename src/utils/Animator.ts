@@ -28,7 +28,7 @@ export default class Animator  {
 
     public animate(): ChannelPayload{
         const updates: ChannelPayload = {};
-        
+
         this.animations.forEach((animation, channel, map) => {
             const value = animation.getNextValue();
             if (value > 0 && value < 256) {

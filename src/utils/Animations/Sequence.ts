@@ -2,7 +2,7 @@ import {IAnimation} from '../Animator';
 
 export default class SequenceAnimation implements IAnimation {
     private frame = 0;
-    
+
     constructor(private sequence: number[]) {}
 
     isFinished() {

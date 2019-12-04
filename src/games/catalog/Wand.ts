@@ -60,7 +60,7 @@ export default class Wand extends Game {
                     this.messageFinished = true;
             });
         }
-        
+
     }
 
     shutdown() {

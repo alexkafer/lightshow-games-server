@@ -31,7 +31,7 @@ export class FrameUpdater  {
         }
 
         // Clamp to avoid overflow errors
-        this.updateChannel(channel, Math.min(Math.max(value, 0), 255));    
+        this.updateChannel(channel, Math.min(Math.max(value, 0), 255));
     }
 
     public set(channels: ChannelPayload) {
@@ -39,8 +39,7 @@ export class FrameUpdater  {
             logger.error("Setting undefined channels");
         }
 
-        for (const channel in channels)
-        {  
+        for (const channel of Object.keys(channels)) {
             // For makes channel a string, so the + converts it back to a number
             this.setChannel(+channel, channels[+channel]);
         }

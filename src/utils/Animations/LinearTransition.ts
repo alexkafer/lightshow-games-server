@@ -3,7 +3,7 @@ import { IAnimation } from '../Animator';
 export default class LinearTransition implements IAnimation {
 
     private current: number;
-    
+
     constructor(from: number, private to: number, private step: number) {
         this.current = from;
     }
@@ -26,4 +26,3 @@ export default class LinearTransition implements IAnimation {
         return newValue;
     }
 }
-    

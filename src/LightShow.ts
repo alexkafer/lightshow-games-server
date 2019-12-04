@@ -11,7 +11,7 @@ import SocketIO from "socket.io";
 const NETLIGHT_START = 141;
 const NETLIGHT_ROWS = 5;
 const NETLIGHT_COLUMNS = 12;
-       
+
 
 export default class LightShow {
     public static readonly FRAME_RATE = 50;
@@ -68,15 +68,15 @@ export default class LightShow {
         logger.info("Writing " + text);
         // Pixels come in in row major order
         const pixels = makeTextArray(text);
-       
+
 
         function delay(ms: number) {
             return new Promise(resolve => setTimeout(resolve, ms));
         }
-    
-        // All the rows are the same, so the length of the first row is the 
+
+        // All the rows are the same, so the length of the first row is the
         // total horizontal length of the message
-        let hiddenPixels = pixels[0].length - NETLIGHT_COLUMNS;
+        const hiddenPixels = pixels[0].length - NETLIGHT_COLUMNS;
         for (let scroll = 0; scroll < hiddenPixels; scroll++) {
             this.displayPixels(pixels, scroll);
             await delay(time / hiddenPixels);
