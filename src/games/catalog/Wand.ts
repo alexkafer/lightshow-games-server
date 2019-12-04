@@ -22,9 +22,8 @@ export default class Wand extends Game {
     }
 
     loop() {
-
         // This will fade up the entire show over 1 second.
-        this.lightShow.uniformAdd( (255 / LightShow.FRAME_RATE));
+        this.lightShow.uniformAdd(-(255 / LightShow.FRAME_RATE));
 
         // Check for light hits
         const lightVector = new Vector3();

@@ -2,7 +2,6 @@ import logger from "./utils/Logger";
 
 import GameServer from "./GameServer";
 import Layout from "./utils/Layout";
-import Light from "./utils/Light";
 
 import SocketIO from "socket.io";
 
@@ -34,20 +33,20 @@ export default class LightShow {
 
         // The frame queue are the next lights to update.
         // -1 is no update, 0 or positive is a value.
-        this.frameQueue = new Array<number>(512);
+        this.frameQueue = new Array<number>(513);
         this.frameQueue.fill(NO_UPDATE);
 
         // The frame is what we currently expect the light show to be displaying
-        this.frame = new Array<number>(512);
-        this.frame.fill(255);
+        this.frame = new Array<number>(513);
+        this.frame.fill(0);
 
         this.start();
     }
 
     public uniformAdd(amount: number) {
-        this.layout.getLights().forEach((light) => {
-            this.addToChannel(light.channel, amount);
-        });
+        for (let i = 1; i <= 512; i++) {
+            this.queueUpdate(i, this.frame[i] + amount, false);
+        }
     }
 
     public setChannel(channel: number, value: number) {
@@ -105,9 +104,12 @@ export default class LightShow {
     private queueUpdate(internalChannel: number, value: number, shouldPatch: boolean = true) {
         const channel = shouldPatch ? this.layout.lookupPatch(internalChannel) : internalChannel;
 
-        if (channel === undefined) return;
+        if (channel === undefined) {
+            logger.error(internalChannel + " patch not found");
+            return;
+        }
 
-        if (channel < 0 || channel >= 512) {
+        if (channel < 1 || channel > 512) {
             logger.error("Trying to set channel out of range: " + channel);
             return;
         }
@@ -128,13 +130,13 @@ export default class LightShow {
     private commitUpdates() {
         const diff: { [key: number]: number; } = {};
 
-        // For each update, set frame to the new value and reset update
-        this.frameQueue.map((update, channel) => {
-            if (update !== NO_UPDATE) {
-                this.frame[channel] = diff[channel] = update;
-                return NO_UPDATE;
+        // At this point, these are DMX channels
+        for (let channel = 1; channel < this.frameQueue.length; channel++) {
+            if (this.frameQueue[channel] !== NO_UPDATE) {
+                this.frame[channel] = diff[channel] = this.frameQueue[channel];
+                this.frameQueue[channel] = NO_UPDATE;
             };
-        });
+        }
 
         return diff;
     }
@@ -149,10 +151,10 @@ export default class LightShow {
 
     private emitUpdates() {
         const payload = this.commitUpdates();
-
         const changes = Object.keys(payload).length;
         if (changes > 0) {
             logger.debug("Sending payload with " + changes + " updates");
+            logger.verbose(JSON.stringify(payload));
             this.gallium.emit('frame', payload);
         }
     }

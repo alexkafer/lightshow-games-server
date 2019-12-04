@@ -14,11 +14,21 @@
               "--colors",
               "${file}",
               "--require",
-              "ts-node/register"
+              "ts-node/register",
             ],
             "console": "integratedTerminal",
             "sourceMaps": true,
             "internalConsoleOptions": "neverOpen"
-      }
+      },
+      {
+        "name": "Current TS File",
+        "type": "node",
+        "request": "launch",
+        "args": ["${relativeFile}"],
+        "runtimeArgs": ["--nolazy", "-r", "ts-node/register", "-r", "esm"],
+        "sourceMaps": true,
+        "cwd": "${workspaceRoot}",
+        "protocol": "inspector",
+    }
     ]
 }

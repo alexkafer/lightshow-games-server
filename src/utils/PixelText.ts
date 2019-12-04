@@ -268,11 +268,11 @@ export const makeTextArray = (text: string) => {
 
     let pixels: boolean[][] = [[], [], [], [], []];
 
-    for (var i = 0; i < text.length; i++) {
+    for (let i = 0; i < text.length; i++) {
         const letter = letters[text.charAt(i)];
         pixels = concat(pixels, letter);
     }
-    
+
     return pixels;
 }
 

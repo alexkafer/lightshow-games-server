@@ -25,6 +25,7 @@ const server = new GameServer();
 
 /** CREATE LAYOUT */
 const lightshow2019 = path.join(__dirname, "..", "static", "layouts", "lightshow2019");
+// const lightshow2019 = path.join(__dirname, "static", "layouts", "lightshow2019");
 const layout = new Layout(lightshow2019);
 const lightShow = new LightShow(layout, server);
 
@@ -46,6 +47,7 @@ const gameManager = new GameManager(playerManager);
 server.use('/games', new AdminAPI(gameManager).getRouter());
 server.use('/layout', layout.getRouter());
 server.useAdmin(path.join(__dirname,  "..", 'admin', 'build'));
+// server.useAdmin(path.join(__dirname, 'admin', 'build'));
 
 /** START DEFAULT GAME */
 gameManager.startGame(WAND);

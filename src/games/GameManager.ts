@@ -55,7 +55,11 @@ export default class GameManager {
         }
 
         // Loop game 5 times a second
-        setInterval(this.currentGame.loop.bind(this.currentGame), 50);
+        setInterval(() => {
+            if (this.currentGame) {
+                this.currentGame.loop();
+            }
+        }, 50);
 
         // Update the admin interface every second
         setInterval(this.playerManager.updateAdmin.bind(this.playerManager), 50);

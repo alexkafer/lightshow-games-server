@@ -22,7 +22,7 @@ export default class Layout {
     private size: Vector3;
     private center: Vector3;
 
-    private patch: Map<number, number>
+    private patch: Map<number, number>;
     private sceneObject: Object3D;
     private raycaster: Raycaster;
     private down: Vector3;
@@ -142,7 +142,8 @@ export default class Layout {
     }
 
     public lookupPatch(internalChannel: number) {
-        return this.patch.get(internalChannel);
+        logger.verbose(JSON.stringify(this.patch))
+        return this.patch.get(Number(internalChannel));
     }
 
     // Coords are x, y positions on a 2D map, with:
