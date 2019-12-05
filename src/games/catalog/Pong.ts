@@ -36,6 +36,7 @@ export default class Pong extends Game {
 
     setup(): void {
         logger.info("Starting pong");
+        this.lightShow.allOn();
     }
 
     loop(): void {
