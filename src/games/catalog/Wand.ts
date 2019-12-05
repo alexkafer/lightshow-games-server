@@ -25,6 +25,7 @@ export default class Wand extends Game {
 
     setup() {
         logger.info("Starting Wand");
+        this.lightShow.allOff();
     }
 
     loop() {
