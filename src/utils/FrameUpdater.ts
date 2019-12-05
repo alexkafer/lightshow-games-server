@@ -19,7 +19,7 @@ export class FrameUpdater  {
         this.frame.fill(0);
     }
 
-    public setChannel(channel: number, value: number) {
+    public setFinalChannel(channel: number, value: number) {
         if (channel === undefined || value === undefined) {
             logger.error("Setting undefined channel or value: " + channel + " " + value);
             return
@@ -32,17 +32,6 @@ export class FrameUpdater  {
 
         // Clamp to avoid overflow errors
         this.updateChannel(channel, Math.min(Math.max(value, 0), 255));
-    }
-
-    public set(channels: ChannelPayload) {
-        if (channels === undefined ) {
-            logger.error("Setting undefined channels");
-        }
-
-        for (const channel of Object.keys(channels)) {
-            // For makes channel a string, so the + converts it back to a number
-            this.setChannel(+channel, channels[+channel]);
-        }
     }
 
     // Translates channel to zero index.

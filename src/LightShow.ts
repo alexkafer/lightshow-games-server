@@ -41,11 +41,15 @@ export default class LightShow {
     }
 
     public setChannel(internalChannel: number, value: number) {
-        this.frameUpdater.setChannel(internalChannel, value);
+        const channel = this.layout.lookupPatch(internalChannel)
+        this.frameUpdater.setFinalChannel(channel, value);
     }
 
     public set(updates: ChannelPayload) {
-        this.frameUpdater.set(updates);
+        for (const channel of Object.keys(updates)) {
+            // For makes channel a string, so the + converts it back to a number
+            this.setChannel(+channel, updates[+channel]);
+        }
     }
 
     public allOn() {
