@@ -125,7 +125,7 @@ export default class LightManager implements IChannelInterface {
         const payload = this.frameUpdater.commitUpdates();
         const changes = Object.keys(payload).length;
         if (changes > 0) {
-            logger.debug("Sending payload with " + changes + " updates");
+            // logger.debug("Sending payload with " + changes + " updates");
             this.gallium.sendFrame(payload);
         }
     }

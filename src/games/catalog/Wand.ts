@@ -3,7 +3,7 @@ import logger from '../../utils/Logger';
 
 import {Vector3} from 'three';
 
-import LightShow from '../../LightManager';
+import LightManager from '../../LightManager';
 import Game from '../Game'
 import Player from '../Player'
 import Light from '../../lights/Light'
@@ -16,7 +16,7 @@ export default class Wand extends Game {
     private animator: Animator;
     private messageFinished: boolean;
 
-    constructor(lightShow: LightShow) {
+    constructor(lightShow: LightManager) {
         super(lightShow, "Wand", ["position", "odometry"], 2);
 
         this.animator = new Animator();

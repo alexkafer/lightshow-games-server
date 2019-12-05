@@ -1,12 +1,12 @@
 import Game from '../Game'
 import Player from "../Player"
-import LightShow from '../../LightManager';
+import LightManager from '../../LightManager';
 
 import logger from '../../utils/Logger';
 
 export default class Manual extends Game {
 
-    constructor(lightShow: LightShow) {
+    constructor(lightShow: LightManager) {
         super(lightShow, "Manual", ['allOn', 'allOff', 'text', 'set'], 1);
     }
 

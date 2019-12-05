@@ -1,6 +1,6 @@
 import Game from '../Game'
 import Player from "../Player"
-import { IScene, NETLIGHT_START, NETLIGHT_ROWS, NETLIGHT_COLUMNS} from '../../LightManager';
+import LightManager, {NETLIGHT_START, NETLIGHT_ROWS, NETLIGHT_COLUMNS} from '../../LightManager';
 
 import logger from '../../utils/Logger';
 
@@ -9,6 +9,9 @@ enum Direction {
     None = 0,
     Neg = -1
 }
+
+const CENTER_X = 5;
+const CENTER_Y = 2;
 
 export default class Pong extends Game {
     ballPosX: number;
@@ -27,7 +30,7 @@ export default class Pong extends Game {
     showingMessage: boolean;
     logicTick: number;
 
-    constructor(scene: IScene) {
+    constructor(lightShow: LightManager) {
         super(lightShow, "Pong", ['up', 'down'], 2);
         this.logicTick = 0;
     }
@@ -39,11 +42,8 @@ export default class Pong extends Game {
         this.ballDirX = Direction.Pos;
         this.ballDirY = Direction.None;
 
-        this.ballPosY = 5;
-        this.ballPosX = 2;
-
-        this.leftScore = 0;
-        this.rightScore = 0;
+        this.ballPosY = CENTER_Y;
+        this.ballPosX = CENTER_X;
     }
 
     setup(): void {
@@ -62,52 +62,48 @@ export default class Pong extends Game {
 
         if (players.length < 2) {
             this.showPong();
-            this.resetGame();
+
+            this.leftScore = 0;
+            this.rightScore = 0;
         } else {
             this.leftPlayer = players[0].currentSocket.id;
             this.rightPlayer = players[1].currentSocket.id;
 
             // Logic, every 10th game loop
             if (this.logicTick === 0) {
-                this.moveBall();
-
                 if (this.ballPosX < 0) { // If past the left side
-                    logger.info("Ball hit left")
-                    if (this.ballPosX > this.leftPaddle && this.ballPosX < this.leftPaddle + 1) {
-                        this.ballDirX = Direction.Pos;
-                        this.ballDirY = this.calculateBallReflection(Math.round(this.ballPosX) === this.leftPaddle);
-                    } else {
-                        // Score!
-                        this.leftScore++;
-                        this.ballPosY = 5;
-                        this.ballPosX = 2;
-                        this.showScore();
-                    }
+                    // Score!
+                    this.leftScore++;
+                    this.showScore();
+                    this.resetGame();
                 } else if (this.ballPosX > 11) {  // If past the right side
                     logger.info("Ball hit right")
-                    if (this.ballPosX > this.rightPaddle && this.ballPosX < this.rightPaddle + 1) {
+                    // Score!
+                    this.rightScore++;
+                    this.showScore();
+                    this.resetGame();
+                } else if (this.ballPosX === 1) {
+                    if (this.ballPosY >= this.leftPaddle && this.ballPosY <= this.leftPaddle + 1) {
+                        this.ballDirX = Direction.Pos;
+                        this.ballDirY = this.calculateBallReflection(this.ballPosY === this.leftPaddle);
+                    } 
+                } else if (this.ballPosX === 10) {
+                    if (this.ballPosY >= this.rightPaddle && this.ballPosY <= this.rightPaddle + 1) {
                         this.ballDirX = Direction.Neg;
-                        this.ballDirY = this.calculateBallReflection(Math.round(this.ballPosX) === this.rightPaddle);
-                    } else {
-                        // Score!
-                        this.rightScore++;
-                        this.ballPosY = 5;
-                        this.ballPosX = 2;
-                        this.showScore();
+                        this.ballDirY = this.calculateBallReflection(this.ballPosY === this.rightPaddle);
                     }
-                } else if (this.ballPosY < 0) {   // If above the top
+                } else if (this.ballPosY <= 0) {   // If above the top
                     logger.info("Ball hit top")
                     // Reflect bottom
                     this.ballDirY = Direction.Pos;
-                    this.ballPosY = 1;
-                } else if (this.ballPosY > 4) {  // If below the bottom
+                } else if (this.ballPosY >= 4) {  // If below the bottom
                     logger.info("Ball hit bottom")
                     // Reflect top!
                     this.ballDirY = Direction.Neg;
-                    this.ballPosY = 3;
                 }
 
-                this.logicTick = 10;
+                this.moveBall();
+                this.logicTick = 5;
             } else {
                 this.logicTick--;
             }
@@ -203,16 +199,16 @@ export default class Pong extends Game {
     }
 
     private getPixelAt(row: number, column: number): number {
+        if (column === this.ballPosX && row === this.ballPosY) {
+            return 255;
+        }
+
         if (column === 0) {
             return (row === this.leftPaddle || row === this.leftPaddle+1) ? 255 : 0;
         }
 
         if (column === 11) {
             return (row === this.rightPaddle || row === this.rightPaddle+1) ? 255 : 0;
-        }
-
-        if (column === this.ballPosY && row === this.ballPosX) {
-            return 255;
         }
 
         return 0;
