@@ -41,7 +41,11 @@ export default class LightShow {
     }
 
     public setChannel(internalChannel: number, value: number) {
-        const channel = this.layout.lookupPatch(internalChannel)
+        const channel = this.layout.lookupPatch(internalChannel);
+        if (channel === undefined) {
+            logger.error("No patch for " + internalChannel);
+            return;
+        }
         this.frameUpdater.setFinalChannel(channel, value);
     }
 
