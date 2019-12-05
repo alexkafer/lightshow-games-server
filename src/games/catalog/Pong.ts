@@ -34,9 +34,24 @@ export default class Pong extends Game {
         this.logicTick = 0;
     }
 
+    private resetGame() {
+        this.leftPaddle = 2;
+        this.rightPaddle = 2;
+
+        this.ballDirX = Direction.Pos;
+        this.ballDirY = Direction.None;
+
+        this.ballPosY = 5;
+        this.ballPosX = 2;
+
+        this.leftScore = 0;
+        this.rightScore = 0;
+    }
+
     setup(): void {
         logger.info("Starting pong");
         this.lightShow.allOn();
+        this.resetGame();
     }
 
     loop(): void {
@@ -49,6 +64,7 @@ export default class Pong extends Game {
 
         if (players.length < 2) {
             this.showPong();
+            this.resetGame();
         } else {
             this.leftPlayer = players[0].currentSocket.id;
             this.rightPlayer = players[1].currentSocket.id;
@@ -121,20 +137,24 @@ export default class Pong extends Game {
         logger.info(message + "! " + JSON.stringify(payload));
         if (message === "up") {
             if (user.currentSocket.id === this.leftPlayer) {
+                logger.info("Moving left up");
                 this.leftPaddle = Math.min(this.leftPaddle - 1, 0);
             }
 
             if (user.currentSocket.id === this.rightPlayer) {
+                logger.info("Moving right up");
                 this.rightPaddle = Math.min(this.leftPaddle - 1, 0);
             }
         }
 
         if (message === "down") {
             if (user.currentSocket.id === this.leftPlayer) {
+                logger.info("Moving left down");
                 this.leftPaddle = Math.max(this.leftPaddle + 1, 3);
             }
 
             if (user.currentSocket.id === this.rightPlayer) {
+                logger.info("Moving right down");
                 this.rightPaddle = Math.max(this.leftPaddle + 1, 3);
             }
         }
@@ -142,13 +162,14 @@ export default class Pong extends Game {
 
     private async showScore() {
         this.showingMessage = true;
+        logger.info("Score is " + this.leftScore + " " + this.rightScore);
         await this.lightShow.displayPixelMessage(this.leftScore + " " + this.rightScore, 1000);
         this.showingMessage = false;
     }
 
     private async showPong() {
         this.showingMessage = true;
-        await this.lightShow.displayPixelMessage("Pong!", 1000);
+        await this.lightShow.displayPixelMessage("Pong!", 2000);
         this.showingMessage = false;
     }
 
@@ -168,10 +189,12 @@ export default class Pong extends Game {
         if (this.ballDirY === Direction.Neg) {
             this.ballPosY -= 1
         }
+
+        logger.info("ball is at " + this.ballDirX + " " + this.ballDirY);
     }
 
     private calculateBallReflection(top: boolean) {
-
+        logger.info("reflecting ball");
         if (top) {
             if (this.ballDirY  === Direction.Pos) return Direction.None
             return Direction.Neg;
