@@ -84,7 +84,7 @@ export default class LightShow {
         // All the rows are the same, so the length of the first row is the
         // total horizontal length of the message
         const hiddenPixels = pixels[0].length;
-        for (let scroll = 0; scroll < hiddenPixels; scroll++) {
+        for (let scroll = -NETLIGHT_COLUMNS; scroll < hiddenPixels; scroll++) {
             this.displayPixels(pixels, scroll);
             await delay(time / hiddenPixels);
         }
