@@ -174,6 +174,7 @@ export default class Pong extends Game {
     }
 
     private moveBall() {
+        logger.info("ball is pointed " + this.ballDirX + " " + this.ballDirY);
         if (this.ballDirX === Direction.Pos) {
             this.ballPosX += 1
         }
@@ -190,7 +191,7 @@ export default class Pong extends Game {
             this.ballPosY -= 1
         }
 
-        logger.info("ball is at " + this.ballDirX + " " + this.ballDirY);
+        logger.info("ball is now at " + this.ballPosX + " " + this.ballPosY);
     }
 
     private calculateBallReflection(top: boolean) {
