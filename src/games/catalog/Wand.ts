@@ -25,7 +25,7 @@ export default class Wand extends Game {
 
     setup() {
         logger.info("Starting Wand");
-        this.lightShow.allOff();
+        this.lightShow.allOn();
     }
 
     loop() {
@@ -48,8 +48,8 @@ export default class Wand extends Game {
                     // and the light. If it is in range, light it up.
                     if (Math.acos(playerVector.dot(lightVector)) < THETA_THRESHOLD) {
                         // Turn the light on, and animate down to zero
-                        this.lightShow.setChannel(light.channel, 255);
-                        this.animator.startLinearTransition([light.channel], 255, 0, 10)
+                        this.lightShow.setChannel(light.channel, 0);
+                        this.animator.startLinearTransition([light.channel], 0, 255, 10)
                     }
                 })
             }
