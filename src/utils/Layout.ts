@@ -142,7 +142,6 @@ export default class Layout {
     }
 
     public lookupPatch(internalChannel: number) {
-        logger.verbose(JSON.stringify(this.patch))
         return this.patch.get(Number(internalChannel));
     }
 

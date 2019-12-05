@@ -59,7 +59,7 @@ export default class GameManager {
             if (this.currentGame) {
                 this.currentGame.loop();
             }
-        }, 50);
+        }, 100);
 
         // Update the admin interface every second
         setInterval(this.playerManager.updateAdmin.bind(this.playerManager), 50);

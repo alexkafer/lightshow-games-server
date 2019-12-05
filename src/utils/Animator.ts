@@ -38,7 +38,10 @@ export default class Animator  {
             }
         })
 
-        // logger.info("Animated " + Object.keys(updates).length + " channels.");
+        const changes = Object.keys(updates).length;
+        if (changes > 0) {
+            logger.info("Animated " + changes + " channels.");
+        }
 
         return updates;
     }

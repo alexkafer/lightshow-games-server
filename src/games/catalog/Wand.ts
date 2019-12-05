@@ -28,6 +28,8 @@ export default class Wand extends Game {
     }
 
     loop() {
+        this.lightShow.set(this.animator.animate());
+
         // This will fade up the entire show over 1 second.
         // Check for light hits
         const lightVector = new Vector3();
@@ -46,13 +48,11 @@ export default class Wand extends Game {
                     if (Math.acos(playerVector.dot(lightVector)) < THETA_THRESHOLD) {
                         // Turn the light on, and animate down to zero
                         this.lightShow.setChannel(light.channel, 255);
-                        this.animator.startLinearTransition([light.channel], 255, 0, (255 / LightShow.FRAME_RATE))
+                        this.animator.startLinearTransition([light.channel], 255, 0, 10)
                     }
                 })
             }
         });
-
-        this.lightShow.set(this.animator.animate());
 
         if (this.messageFinished) {
             this.messageFinished = false;
@@ -60,7 +60,6 @@ export default class Wand extends Game {
                     this.messageFinished = true;
             });
         }
-
     }
 
     shutdown() {
