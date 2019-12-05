@@ -1,12 +1,10 @@
 import logger from "./Logger";
 
+import ChannelPayload from "./ChannelPayload";
+
 const NO_UPDATE: number = -1;
 
-export interface ChannelPayload {
-    [channel: number]: number;
-}
-
-export class FrameUpdater  {
+export default class FrameUpdater  {
     private frameQueue: number[];
     private frame: number[];
 

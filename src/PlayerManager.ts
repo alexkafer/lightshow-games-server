@@ -24,10 +24,10 @@ export default class PlayerManager extends EventEmitter {
         this.players = new Map();
         this.queue = new SlottedQueue();
 
-        this.io = SocketIO(gs.getHTTPServer());
+        this.io = SocketIO(gs.getServer());
         this.io.on('connection', this.userConnection.bind(this));
 
-        this.admin = SocketIO(gs.getHTTPServer(), {
+        this.admin = SocketIO(gs.getServer(), {
             path: '/admin',
         });
         this.admin.on('connection', this.adminConnection.bind(this));

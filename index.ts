@@ -9,7 +9,7 @@ config();
 import GameServer from './src/GameServer'
 import GameManager from './src/games/GameManager'
 import PlayerManager from './src/PlayerManager'
-import LightShow from './src/LightShow'
+import LightShow from './src/LightManager'
 
 // Games
 import Wand from './src/games/catalog/Wand'
@@ -18,14 +18,13 @@ import Manual from './src/games/catalog/Manual'
 
 /** Interaction Interface */
 import AdminAPI from './src/games/Admin'
-import Layout from './src/utils/Layout'
+import Layout from './src/lights/Layout'
 
 /** CREATE SERVER */
 const server = new GameServer();
 
 /** CREATE LAYOUT */
-const lightshow2019 = path.join(__dirname, "..", "static", "layouts", "lightshow2019");
-// const lightshow2019 = path.join(__dirname, "static", "layouts", "lightshow2019");
+const lightshow2019 = path.join(process.env.LAYOUTS, "lightshow2019");
 const layout = new Layout(lightshow2019);
 const lightShow = new LightShow(layout, server);
 
@@ -46,11 +45,10 @@ const gameManager = new GameManager(playerManager);
 /** SERVE ADMIN API */
 server.use('/games', new AdminAPI(gameManager).getRouter());
 server.use('/layout', layout.getRouter());
-server.useAdmin(path.join(__dirname,  "..", 'admin', 'build'));
-// server.useAdmin(path.join(__dirname, 'admin', 'build'));
+server.useAdmin(path.join(process.env.ADMIN, 'build'));
 
 /** START DEFAULT GAME */
-gameManager.startGame(WAND);
+gameManager.startGame(PONG);
 
 /** START SERVE */
 server.start(process.env.PORT);

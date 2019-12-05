@@ -7,7 +7,7 @@ import logger from './utils/Logger';
 
 export default class GameServer {
     private app: Express
-    private httpServer?: Server
+    private server?: Server
 
     constructor() {
         this.app = express();
@@ -19,11 +19,11 @@ export default class GameServer {
         const credentials = { key, cert, ca };
 
         // initialize a simple  server
-        this.httpServer = createServer(credentials, this.app);
+        this.server = createServer(credentials, this.app);
     }
 
-    public getHTTPServer() {
-        return this.httpServer;
+    public getServer() {
+        return this.server;
     }
 
     public getExpressApp() {
@@ -31,12 +31,12 @@ export default class GameServer {
     }
 
     public start(port: any) {
-        if (this.httpServer === undefined) {
+        if (this.server === undefined) {
             throw new Error("HTTP Server wasn't created correctly");
         }
 
-        this.httpServer.listen(port, () => {
-            logger.info(`Game Server started on port ${port}. URL is probably:  ${process.env.SERVER_URL}`);
+        this.server.listen(port, () => {
+            logger.info(`Game Server started on port ${port}.`);
         });
     }
 

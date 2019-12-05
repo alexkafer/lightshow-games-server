@@ -22,7 +22,7 @@ describe('player queue', function() {
     ]);
   });
 
-  it('concats two letters', async function() {
+  it('concatenates two letters', async function() {
     const text = makeTextArray("az");
 
     expect(text).to.eql([

@@ -14,11 +14,11 @@
               "--colors",
               "${file}",
               "--require",
-              "ts-node/register",
+              "ts-node/register"
             ],
             "console": "integratedTerminal",
             "sourceMaps": true,
-            "internalConsoleOptions": "neverOpen"
+            "internalConsoleOptions": "openOnFirstSessionStart"
       },
       {
             "name": "Run Server",
@@ -29,7 +29,8 @@
             "sourceMaps": true,
             "cwd": "${workspaceRoot}",
             "protocol": "inspector",
-            "envFile": "${workspaceFolder}/.env"
+            "envFile": "${workspaceFolder}/.env",
+            "console": "integratedTerminal",
     }
     ]
 }

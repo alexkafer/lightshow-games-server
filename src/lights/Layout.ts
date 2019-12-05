@@ -9,7 +9,7 @@ import { Router, json } from 'express';
 import cors from 'cors'
 
 import Light from "./Light";
-import logger from './Logger';
+import logger from '../utils/Logger';
 
 import { Vector3, Object3D, Raycaster } from 'three';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';

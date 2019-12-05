@@ -1,6 +1,6 @@
 import Game from '../Game'
 import Player from "../Player"
-import LightShow from '../../LightShow';
+import LightShow from '../../LightManager';
 
 import logger from '../../utils/Logger';
 

@@ -1,10 +1,8 @@
 import logger from "./Logger";
 
-import { ChannelPayload } from "./FrameUpdater";
-import { makeTextArray } from './PixelText';
+import ChannelPayload from "./ChannelPayload";
 
 import LinearTransition from "./Animations/LinearTransition";
-import SequenceAnimation from "./Animations/Sequence";
 
 export interface IAnimation {
     isFinished(): boolean;

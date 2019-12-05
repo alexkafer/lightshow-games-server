@@ -1,42 +1,36 @@
 import logger from "./utils/Logger";
 import { makeTextArray } from "./utils/PixelText";
 
-import {FrameUpdater, ChannelPayload} from "./utils/FrameUpdater";
+import FrameUpdater from "./utils/FrameUpdater";
+import ChannelPayload from "./utils/ChannelPayload";
 
 import GameServer from "./GameServer";
-import Layout from "./utils/Layout";
-
-import SocketIO from "socket.io";
+import Layout from "./lights/Layout";
+import Gallium from "./lights/interfaces/Gallium";
 
 export const NETLIGHT_START = 141;
 export const NETLIGHT_ROWS = 5;
 export const NETLIGHT_COLUMNS = 12;
 
+export interface IChannelInterface {
+    displayPixels(pixels: boolean[][], offset: number): void;
+    setChannel(internalChannel: number, value: number): void;
+    set(updates: ChannelPayload): void;
+    allOn(): void;
+    allOff(): void;
+}
 
-export default class LightShow {
+export default class LightManager implements IChannelInterface {
     public static readonly FRAME_RATE = 50;
     public static readonly KEYFRAME_COUNT = 100;
 
-    private gallium: SocketIO.Server;
     private frameUpdater: FrameUpdater;
+    private gallium: Gallium;
 
     constructor(public layout: Layout, gs: GameServer) {
         this.frameUpdater = new FrameUpdater(512);
 
-        this.gallium = SocketIO(gs.getHTTPServer(), {
-            path: '/gallium',
-        });
-
-        this.gallium.use((socket, next) => {
-            const token = socket.handshake.query.token;
-            if (token === "lightshow2") {
-                return next();
-            }
-            return next(new Error('authentication error'));
-        });
-
-        this.gallium.on('connection', this.galliumConnection.bind(this));
-
+        this.gallium = new Gallium(gs);
         this.start();
     }
 
@@ -61,7 +55,7 @@ export default class LightShow {
 
         // Updating internal frame for future updates
         this.frameUpdater.resetAndFill(255);
-        this.gallium.emit('allOn');
+        this.gallium.sendAllOn();
     }
 
     public allOff() {
@@ -69,7 +63,7 @@ export default class LightShow {
 
         // Updating internal frame for future updates
         this.frameUpdater.resetAndFill(0);
-        this.gallium.emit('allOff');
+        this.gallium.sendAllOff();
     }
 
     public async displayPixelMessage(text: string, time: number) {
@@ -90,7 +84,7 @@ export default class LightShow {
         }
     }
 
-    private displayPixels(pixels: boolean[][], offset: number = 0) {
+    public displayPixels(pixels: boolean[][], offset: number = 0) {
         for (let column = 0; column < NETLIGHT_COLUMNS; column++) {
             for (let row = 0; row < NETLIGHT_ROWS; row++) {
                 const channel = NETLIGHT_START + 10*column + 2*row;
@@ -109,25 +103,14 @@ export default class LightShow {
         // Every 5 seconds send a keyframe. The others can just be updates
         let count = 0;
         setInterval(() => {
-            if (count > LightShow.KEYFRAME_COUNT) {
+            if (count > LightManager.KEYFRAME_COUNT) {
                 this.emitKeyframe();
                 count = 0;
             } else {
                 this.emitUpdates();
                 count += 1;
             }
-        }, LightShow.FRAME_RATE);
-    }
-
-    private galliumConnection(socket: any) {
-        logger.debug('gallium connected')
-        socket.join('gallium');
-
-        socket.emit('frame', Object.assign({}, this.frameUpdater.getFrame(false)));
-
-        socket.on('disconnect', () => {
-            logger.debug('gallium disconnected');
-        });
+        }, LightManager.FRAME_RATE);
     }
 
     private emitKeyframe() {
@@ -135,7 +118,7 @@ export default class LightShow {
         this.frameUpdater.commitUpdates();
 
         // Commit the updates to the frame and send the frame
-        this.gallium.emit('frame', this.frameUpdater.getFrame(true));
+        this.gallium.sendFrame(this.frameUpdater.getFrame(true));
     }
 
     private emitUpdates() {
@@ -143,7 +126,7 @@ export default class LightShow {
         const changes = Object.keys(payload).length;
         if (changes > 0) {
             logger.debug("Sending payload with " + changes + " updates");
-            this.gallium.emit('frame', payload);
+            this.gallium.sendFrame(payload);
         }
     }
 }

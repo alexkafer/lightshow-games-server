@@ -1,9 +1,8 @@
 import Game from '../Game'
 import Player from "../Player"
-import LightShow, { NETLIGHT_START, NETLIGHT_ROWS, NETLIGHT_COLUMNS} from '../../LightShow';
+import { IScene, NETLIGHT_START, NETLIGHT_ROWS, NETLIGHT_COLUMNS} from '../../LightManager';
 
 import logger from '../../utils/Logger';
-import { Vector2 } from 'three';
 
 enum Direction {
     Pos = 1,
@@ -12,7 +11,6 @@ enum Direction {
 }
 
 export default class Pong extends Game {
-
     ballPosX: number;
     ballPosY: number;
     ballDirX: Direction;
@@ -29,7 +27,7 @@ export default class Pong extends Game {
     showingMessage: boolean;
     logicTick: number;
 
-    constructor(lightShow: LightShow) {
+    constructor(scene: IScene) {
         super(lightShow, "Pong", ['up', 'down'], 2);
         this.logicTick = 0;
     }
@@ -73,32 +71,40 @@ export default class Pong extends Game {
             if (this.logicTick === 0) {
                 this.moveBall();
 
-                if (this.ballPosX < 0) {
+                if (this.ballPosX < 0) { // If past the left side
+                    logger.info("Ball hit left")
                     if (this.ballPosX > this.leftPaddle && this.ballPosX < this.leftPaddle + 1) {
                         this.ballDirX = Direction.Pos;
                         this.ballDirY = this.calculateBallReflection(Math.round(this.ballPosX) === this.leftPaddle);
                     } else {
                         // Score!
                         this.leftScore++;
+                        this.ballPosY = 5;
+                        this.ballPosX = 2;
                         this.showScore();
                     }
-                } else if (this.ballPosX > 11) {
+                } else if (this.ballPosX > 11) {  // If past the right side
+                    logger.info("Ball hit right")
                     if (this.ballPosX > this.rightPaddle && this.ballPosX < this.rightPaddle + 1) {
-                        this.ballDirX = Direction.Pos;
+                        this.ballDirX = Direction.Neg;
                         this.ballDirY = this.calculateBallReflection(Math.round(this.ballPosX) === this.rightPaddle);
                     } else {
                         // Score!
                         this.rightScore++;
+                        this.ballPosY = 5;
+                        this.ballPosX = 2;
                         this.showScore();
                     }
-                }
-
-                if (this.ballPosY < 0) {
-                    // Reflect!
-                    this.ballDirY = Direction.Neg;
-                } else if (this.ballPosY > 4) {
-                    // Score!
+                } else if (this.ballPosY < 0) {   // If above the top
+                    logger.info("Ball hit top")
+                    // Reflect bottom
                     this.ballDirY = Direction.Pos;
+                    this.ballPosY = 1;
+                } else if (this.ballPosY > 4) {  // If below the bottom
+                    logger.info("Ball hit bottom")
+                    // Reflect top!
+                    this.ballDirY = Direction.Neg;
+                    this.ballPosY = 3;
                 }
 
                 this.logicTick = 10;
@@ -128,25 +134,25 @@ export default class Pong extends Game {
         logger.info(message + "! " + JSON.stringify(payload));
         if (message === "up") {
             if (user.currentSocket.id === this.leftPlayer) {
-                logger.info("Moving left up");
-                this.leftPaddle = Math.min(this.leftPaddle - 1, 0);
+                this.leftPaddle = Math.max(this.leftPaddle - 1, 0);
+                logger.info("Moving left up: " + this.leftPaddle);
             }
 
             if (user.currentSocket.id === this.rightPlayer) {
-                logger.info("Moving right up");
-                this.rightPaddle = Math.min(this.leftPaddle - 1, 0);
+                logger.info("Moving right up: " + this.rightPaddle);
+                this.rightPaddle = Math.max(this.rightPaddle - 1, 0);
             }
         }
 
         if (message === "down") {
             if (user.currentSocket.id === this.leftPlayer) {
-                logger.info("Moving left down");
-                this.leftPaddle = Math.max(this.leftPaddle + 1, 3);
+                logger.info("Moving left down: " + this.leftPaddle);
+                this.leftPaddle = Math.min(this.leftPaddle + 1, 3);
             }
 
             if (user.currentSocket.id === this.rightPlayer) {
-                logger.info("Moving right down");
-                this.rightPaddle = Math.max(this.leftPaddle + 1, 3);
+                logger.info("Moving right down: " + this.rightPaddle);
+                this.rightPaddle = Math.min(this.rightPaddle + 1, 3);
             }
         }
     }
@@ -205,7 +211,7 @@ export default class Pong extends Game {
             return (row === this.rightPaddle || row === this.rightPaddle+1) ? 255 : 0;
         }
 
-        if (column === Math.round(this.ballPosX) && row === Math.round(this.ballPosY)) {
+        if (column === this.ballPosY && row === this.ballPosX) {
             return 255;
         }
 

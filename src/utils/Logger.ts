@@ -14,19 +14,16 @@ const options: LoggerOptions = {
             filename: 'errors.log',
             level: "error",
         }),
+        new transports.Console({
+            level: 'debug',
+            format: winston.format.combine(
+              winston.format.colorize(),
+              winston.format.simple()
+            )
+        })
     ],
 };
 
 const logger = createLogger(options);
-
-if (process.env.NODE_ENV === "dev") {
-    logger.add(new transports.Console({
-        level: 'debug',
-        format: winston.format.combine(
-          winston.format.colorize(),
-          winston.format.simple()
-        )
-      }));
-}
 
 export default logger;

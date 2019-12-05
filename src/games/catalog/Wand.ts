@@ -3,10 +3,10 @@ import logger from '../../utils/Logger';
 
 import {Vector3} from 'three';
 
-import LightShow from '../../LightShow';
+import LightShow from '../../LightManager';
 import Game from '../Game'
 import Player from '../Player'
-import Light from '../../utils/Light'
+import Light from '../../lights/Light'
 import Animator from '../../utils/Animator'
 
 const THETA_THRESHOLD = Math.PI/8;
