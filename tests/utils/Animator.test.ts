@@ -30,6 +30,18 @@ describe('frame animator', function() {
     expect(animator.animate()).eql({});
   });
 
+
+  it('will linearly decrease a channel to 0' , function() {
+    const animator = new Animator();
+    expect(animator.animate()).eql({})
+
+    animator.startLinearTransition([3], 15, 0, 10);
+    expect(animator.animate()).eql({3: 5});
+    expect(animator.animate()).eql({3: 0});
+    expect(animator.animate()).eql({});
+  });
+
+
   it('will not over shoot an increase' , function() {
     const animator = new Animator();
     expect(animator.animate()).eql({})

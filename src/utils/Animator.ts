@@ -19,8 +19,6 @@ export default class Animator  {
     }
 
     public startLinearTransition(channels: number[], from: number, to: number, step: number) {
-        logger.info("New animation for channels " + channels.join(',') + " to value " + to);
-
         channels.forEach((channel) => {
             this.animations.set(channel, new LinearTransition(from, to, step));
         })
@@ -31,7 +29,7 @@ export default class Animator  {
 
         this.animations.forEach((animation, channel, map) => {
             const value = animation.getNextValue();
-            if (value > 0 && value < 256) {
+            if (value >= 0 && value < 256) {
                 updates[channel] = value;
             } else {
                 map.delete(channel);
