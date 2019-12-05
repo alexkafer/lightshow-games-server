@@ -73,7 +73,7 @@ export default class Pong extends Game {
             if (this.logicTick === 0) {
                 this.moveBall();
 
-                if (this.ballPosX === 0) {
+                if (this.ballPosX < 0) {
                     if (this.ballPosX === this.leftPaddle) {
                         this.ballDirX = Direction.Pos;
                         this.ballDirY = this.calculateBallReflection(true);
@@ -86,7 +86,7 @@ export default class Pong extends Game {
                         this.leftScore++;
                         this.showScore();
                     }
-                } else if (this.ballPosX === 11) {
+                } else if (this.ballPosX > 11) {
                     if (this.ballPosX === this.rightPaddle) {
                         // Reflect!
                         this.ballDirX = Direction.Neg;
@@ -102,10 +102,10 @@ export default class Pong extends Game {
                     }
                 }
 
-                if (this.ballPosY === 0) {
+                if (this.ballPosY < 0) {
                     // Reflect!
                     this.ballDirY = Direction.Neg;
-                } else if (this.ballPosY === 4) {
+                } else if (this.ballPosY > 4) {
                     // Score!
                     this.ballDirY = Direction.Pos;
                 }
@@ -214,7 +214,7 @@ export default class Pong extends Game {
             return (row === this.rightPaddle || row === this.rightPaddle+1) ? 255 : 0;
         }
 
-        if (column === this.ballPosX && row === this.ballPosY) {
+        if (column === Math.round(this.ballPosX) && row === Math.round(this.ballPosY)) {
             return 255;
         }
 
