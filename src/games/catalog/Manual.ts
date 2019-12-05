@@ -37,7 +37,7 @@ export default class Manual extends Game {
 
         if (message === "text") {
             logger.info("Setting message to " + payload)
-            this.lightShow.displayPixelMessage(payload, 2000, true)
+            this.lightShow.displayPixelMessage(payload, 2000)
         }
     }
 }

@@ -20,7 +20,7 @@ export default class Wand extends Game {
         super(lightShow, "Wand", ["position", "odometry"], 2);
 
         this.animator = new Animator();
-        this.messageFinished = false;
+        this.messageFinished = true;
     }
 
     setup() {
@@ -56,7 +56,7 @@ export default class Wand extends Game {
 
         if (this.messageFinished) {
             this.messageFinished = false;
-            this.lightShow.displayPixelMessage("WAND", 2000, true).then(() => {
+            this.lightShow.displayPixelMessage("WAND", 2000).then(() => {
                     this.messageFinished = true;
             });
         }

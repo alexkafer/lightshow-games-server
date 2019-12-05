@@ -8,9 +8,9 @@ import Layout from "./utils/Layout";
 
 import SocketIO from "socket.io";
 
-const NETLIGHT_START = 141;
-const NETLIGHT_ROWS = 5;
-const NETLIGHT_COLUMNS = 12;
+export const NETLIGHT_START = 141;
+export const NETLIGHT_ROWS = 5;
+export const NETLIGHT_COLUMNS = 12;
 
 
 export default class LightShow {
@@ -72,7 +72,7 @@ export default class LightShow {
         this.gallium.emit('allOff');
     }
 
-    public async displayPixelMessage(text: string, time: number, reverse: boolean) {
+    public async displayPixelMessage(text: string, time: number) {
         logger.info("Writing " + text);
         // Pixels come in in row major order
         const pixels = makeTextArray(text);
@@ -83,15 +83,8 @@ export default class LightShow {
 
         // All the rows are the same, so the length of the first row is the
         // total horizontal length of the message
-        const hiddenPixels = pixels[0].length - NETLIGHT_COLUMNS;
+        const hiddenPixels = pixels[0].length;
         for (let scroll = 0; scroll < hiddenPixels; scroll++) {
-            this.displayPixels(pixels, scroll);
-            await delay(time / hiddenPixels);
-        }
-
-        if (!reverse) return;
-
-        for (let scroll = hiddenPixels-1; scroll >= 0; scroll--) {
             this.displayPixels(pixels, scroll);
             await delay(time / hiddenPixels);
         }
