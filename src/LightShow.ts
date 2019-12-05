@@ -77,7 +77,6 @@ export default class LightShow {
         // Pixels come in in row major order
         const pixels = makeTextArray(text);
 
-
         function delay(ms: number) {
             return new Promise(resolve => setTimeout(resolve, ms));
         }
@@ -92,7 +91,7 @@ export default class LightShow {
 
         if (!reverse) return;
 
-        for (let scroll = hiddenPixels-1; scroll >= 0; scroll++) {
+        for (let scroll = hiddenPixels-1; scroll >= 0; scroll--) {
             this.displayPixels(pixels, scroll);
             await delay(time / hiddenPixels);
         }
