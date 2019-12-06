@@ -86,7 +86,7 @@ export default class Pong extends Game {
                     if (this.ballPosY >= this.leftPaddle && this.ballPosY <= this.leftPaddle + 1) {
                         this.ballDirX = Direction.Pos;
                         this.ballDirY = this.calculateBallReflection(this.ballPosY === this.leftPaddle);
-                    } 
+                    }
                 } else if (this.ballPosX === 10) {
                     if (this.ballPosY >= this.rightPaddle && this.ballPosY <= this.rightPaddle + 1) {
                         this.ballDirX = Direction.Neg;
