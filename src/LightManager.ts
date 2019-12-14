@@ -8,12 +8,12 @@ import GameServer from "./GameServer";
 import Layout from "./lights/Layout";
 import Gallium from "./lights/interfaces/Gallium";
 
-export const NETLIGHT_START = 141;
-export const NETLIGHT_ROWS = 5;
-export const NETLIGHT_COLUMNS = 12;
+export const PIXEL_GRID_START = 141;
+export const PIXEL_GRID_ROWS = 5;
+export const PIXEL_GRID_COLUMNS = 12;
 
 export interface IChannelInterface {
-    displayPixels(pixels: boolean[][], offset: number): void;
+    displayPixels(pixels: number[][], offset: number): void;
     setChannel(internalChannel: number, value: number): void;
     set(updates: ChannelPayload): void;
     allOn(): void;
@@ -78,17 +78,17 @@ export default class LightManager implements IChannelInterface {
         // All the rows are the same, so the length of the first row is the
         // total horizontal length of the message
         const hiddenPixels = pixels[0].length;
-        for (let scroll = -NETLIGHT_COLUMNS; scroll < hiddenPixels; scroll++) {
+        for (let scroll = -PIXEL_GRID_COLUMNS; scroll < hiddenPixels; scroll++) {
             this.displayPixels(pixels, scroll);
             await delay(time / hiddenPixels);
         }
     }
 
-    public displayPixels(pixels: boolean[][], offset: number = 0) {
-        for (let column = 0; column < NETLIGHT_COLUMNS; column++) {
-            for (let row = 0; row < NETLIGHT_ROWS; row++) {
-                const channel = NETLIGHT_START + 10*column + 2*row;
-                const value = pixels[row][column + offset] ? 255 : 0;
+    public displayPixels(pixels: number[][], offset: number = 0) {
+        for (let column = 0; column < PIXEL_GRID_COLUMNS; column++) {
+            for (let row = 0; row < PIXEL_GRID_ROWS; row++) {
+                const channel = PIXEL_GRID_START + 10*column + 2*row;
+                const value = pixels[row][column + offset];
 
                 this.setChannel(channel, value);
                 this.setChannel(channel+1, value);

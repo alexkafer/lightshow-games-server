@@ -280,7 +280,7 @@ export const letters: Letters = {
 export const makeTextArray = (text: string) => {
     text = text.toUpperCase();
 
-    let pixels: boolean[][] = [[], [], [], [], []];
+    let pixels: number[][] = [[], [], [], [], []];
 
     for (let i = 0; i < text.length; i++) {
         const letter = letters[text.charAt(i)];
@@ -290,7 +290,7 @@ export const makeTextArray = (text: string) => {
     return pixels;
 }
 
-const concat = (left: boolean[][], right: number[][]) => {
+const concat = (left: number[][], right: number[][]) => {
     let rightWidth = 0;
 
     for (let row = 0; row < 5; row++) {
@@ -299,13 +299,13 @@ const concat = (left: boolean[][], right: number[][]) => {
 
     // The space
     for (let row = 0; row < 5; row++) {
-        left[row].push(false);
+        left[row].push(0);
     }
 
     // Adding the right
     for (let column = 0; column < rightWidth; column++) {
         for (let row = 0; row < 5; row++) {
-            left[row].push(!!right[row][column]);
+            left[row].push(right[row][column] > 0 ? 255 : 0);
         }
     }
 

@@ -6,10 +6,10 @@ import PlayerManager from '../PlayerManager';
 
 export default class GameManager {
 
-    private static GAMES: Map<string, Game> = new Map<string, Game>();;
-    public static registerGame(game: Game, identifer: string) {
-        logger.debug("Registered " + identifer);
-        GameManager.GAMES.set(identifer, game);
+    private static GAMES: Map<string, Game> = new Map<string, Game>();
+    public static registerGame(game: Game) {
+        GameManager.GAMES.set(game.identifier, game);
+        logger.info("Registered " + game.identifier);
     }
 
     public static listGames(): string[] {
@@ -28,7 +28,7 @@ export default class GameManager {
 
     public getCurrentGame(): string {
         if (this.currentGame) {
-            return this.currentGame.title;
+            return this.currentGame.identifier;
         }
         return 'None';
     }
@@ -49,7 +49,7 @@ export default class GameManager {
                 this.playerManager.createSlots(this.currentGame.playerMax);
             }
 
-            this.playerManager.notifyGameUpdate(this.currentGame.title);
+            this.playerManager.notifyGameUpdate(this.currentGame.identifier);
         } else {
             logger.error(newGame + " is not a registered game. Please fix or register the game.")
         }

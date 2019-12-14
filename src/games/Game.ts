@@ -3,7 +3,7 @@ import LightShow from '../LightManager';
 import PlayerManager from '../PlayerManager';
 
 export default abstract class Game {
-    public title: string;
+    public identifier: string;
     public listenFor: string[];
     public playerMax: number;
 
@@ -15,8 +15,8 @@ export default abstract class Game {
     abstract shutdown() : void;
     abstract action(player: Player, message: string, payload: any) : void;
 
-    constructor(lightShow: LightShow, title: string, listenFor: string[], playerMax: number) {
-        this.title = title;
+    constructor(lightShow: LightShow, identifier: string, listenFor: string[], playerMax: number) {
+        this.identifier = identifier;
         this.listenFor = listenFor;
         this.playerMax = playerMax;
         this.lightShow = lightShow;

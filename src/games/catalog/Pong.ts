@@ -1,6 +1,11 @@
 import Game from '../Game'
 import Player from "../Player"
-import LightManager, {NETLIGHT_START, NETLIGHT_ROWS, NETLIGHT_COLUMNS} from '../../LightManager';
+
+import LightManager, {
+    PIXEL_GRID_START,
+    PIXEL_GRID_ROWS,
+    PIXEL_GRID_COLUMNS
+} from '../../LightManager';
 
 import logger from '../../utils/Logger';
 
@@ -103,15 +108,15 @@ export default class Pong extends Game {
                 }
 
                 this.moveBall();
-                this.logicTick = 5;
+                this.logicTick = 8;
             } else {
                 this.logicTick--;
             }
 
             // Renderer
-            for (let column = 0; column < NETLIGHT_COLUMNS; column++) {
-                for (let row = 0; row < NETLIGHT_ROWS; row++) {
-                    const channel = NETLIGHT_START + 10*column + 2*row;
+            for (let column = 0; column < PIXEL_GRID_COLUMNS; column++) {
+                for (let row = 0; row < PIXEL_GRID_ROWS; row++) {
+                    const channel = PIXEL_GRID_START + 10*column + 2*row;
 
                     const value = this.getPixelAt(row, column);
                     this.lightShow.setChannel(channel, value);
