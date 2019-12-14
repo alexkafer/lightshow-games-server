@@ -57,7 +57,7 @@ export default class Wand extends Game {
 
         if (this.messageFinished) {
             this.messageFinished = false;
-            this.lightShow.displayPixelMessage("WAND", 2000).then(() => {
+            this.lightShow.displayPixelMessage("Wand", 2000).then(() => {
                     this.messageFinished = true;
             });
         }
