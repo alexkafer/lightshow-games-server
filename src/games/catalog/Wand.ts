@@ -17,7 +17,7 @@ export default class Wand extends Game {
     private messageFinished: boolean;
 
     constructor(lightShow: LightManager) {
-        super(lightShow, "WAND", ["position", "odometry"], 5);
+        super(lightShow, "Wand", ["position", "odometry"], 5);
 
         this.animator = new Animator();
         this.messageFinished = true;
