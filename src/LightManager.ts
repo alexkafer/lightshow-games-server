@@ -88,7 +88,7 @@ export default class LightManager implements IChannelInterface {
         for (let column = 0; column < PIXEL_GRID_COLUMNS; column++) {
             for (let row = 0; row < PIXEL_GRID_ROWS; row++) {
                 const channel = PIXEL_GRID_START + 10*column + 2*row;
-                const value = pixels[row][column + offset];
+                const value = pixels[row][column + offset] || 0;
 
                 this.setChannel(channel, value);
                 this.setChannel(channel+1, value);

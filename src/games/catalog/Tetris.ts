@@ -3,11 +3,7 @@ import logger from '../../utils/Logger';
 import Game from '../Game'
 import Player from "../Player"
 
-import LightManager, {
-    PIXEL_GRID_START,
-    PIXEL_GRID_ROWS,
-    PIXEL_GRID_COLUMNS
-} from '../../LightManager';
+import LightManager from '../../LightManager';
 
 import { Shape } from './Tetris/shape/Shape';
 import { ShapeType } from './Tetris/shape/ShapeType';
@@ -21,9 +17,7 @@ export default class Tetris extends Game {
 
     private pixelMap: PixelMap;
     private _movingShape: Shape = null;
-    private _shapesQueue: Shape[] = [];
     private _score: number;
-    private _gameOver : boolean;
     private _shapeFactory: ShapeFactory;
 
     player: string;
@@ -41,11 +35,11 @@ export default class Tetris extends Game {
     ];
 
     constructor(lightShow: LightManager) {
-        super(lightShow, "Tetris", ['up', 'down', 'rotate'], 1);
+        super(lightShow, "Tetris", ['up', 'down'], 1);
         this.logicTick = 0;
 
         this._shapeFactory = new ShapeFactory();
-        this.pixelMap = new PixelMap(PIXEL_GRID_ROWS, PIXEL_GRID_COLUMNS);
+        this.pixelMap = new PixelMap();
     }
 
     setup(): void {
@@ -80,10 +74,12 @@ export default class Tetris extends Game {
                 const reachedBottom = this.lowerShape();
 
                 if(reachedBottom) {
+                    this._movingShape.fillShape(this.pixelMap);
                     this.removeFilledLines();
 
                     if(this.pixelMap.checkAnyFilled(0)){
                         this.showGameOver()
+                        this.newGame();
                     } else {
                         this._movingShape = this.spawnNewShape();
                     }
@@ -96,7 +92,7 @@ export default class Tetris extends Game {
 
             // Show the moving shape, send to the render, and clear for next render
             this._movingShape.fillShape(this.pixelMap);
-            this.lightShow.displayPixels(this.pixelMap.getPixels());
+            this.pixelMap.displayPixels(this.lightShow);
             this._movingShape.clearShape(this.pixelMap);
         }
     }
@@ -110,29 +106,25 @@ export default class Tetris extends Game {
         let toMoveRow = 0;
 
         if (message === "up") {
-            toMoveRow = 1;
-        }
-
-        if (message === "down") {
             toMoveRow = -1;
         }
 
-        if (message === "rotate") {
-            this.rotateShape();
+        if (message === "down") {
+            toMoveRow = 1;
         }
 
         if(toMoveRow !== 0){
 
             const reachedBorder = this._movingShape.cells.some(cell => {
                 const nextY = cell.y + toMoveRow;
-                const partOfShape = this._movingShape.isPartOfShape(cell.setY(cell.y + toMoveRow));
-                return nextY < 0 || nextY === this.pixelMap.rows ||
+                const partOfShape = this._movingShape.isPartOfShape(new Vector2(cell.x, cell.y + toMoveRow));
+                return nextY < 0 || nextY >= this.pixelMap.rows ||
                     (this.pixelMap.isPixelOn(nextY, cell.x) && !partOfShape);
             });
 
             if(!reachedBorder) {
                 this._movingShape.clearShape(this.pixelMap);
-                this._movingShape.move(toMoveRow, 0);
+                this._movingShape.move(0, toMoveRow);
                 this._movingShape.fillShape(this.pixelMap);
             }
         }
@@ -169,12 +161,14 @@ export default class Tetris extends Game {
             const nextX: number = cell.x + 1;
             const partOfShape = this._movingShape.isPartOfShape(new Vector2(nextX, cell.y));
 
-            return nextX === this.pixelMap.columns || (this.pixelMap.isPixelOn(nextX, cell.y) && !partOfShape);
+            return nextX === this.pixelMap.columns || (this.pixelMap.isPixelOn(cell.y, nextX) && !partOfShape);
         });
+
+        logger.info("Tetris, hit bottom?" + reachedBottom);
 
         if(!reachedBottom) {
             this._movingShape.clearShape(this.pixelMap);
-            this._movingShape.move(0, 1);
+            this._movingShape.move(1, 0);
             this._movingShape.fillShape(this.pixelMap);
         }
 
@@ -198,36 +192,5 @@ export default class Tetris extends Game {
                     this._shapeTypes[randomShapeTypeIndex],
                     new Vector2(1, 2)
                 );
-    }
-
-    private rotateShape(): void {
-
-        if(!this._movingShape.origin){
-            return;
-        }
-
-        const newShape = [];
-
-        for(const cell of this._movingShape.cells) {
-            const x = cell.x - this._movingShape.origin.x;
-            const y = cell.y - this._movingShape.origin.y;
-            const newX = y;
-            const newY = -x;
-
-            const newCell = this._movingShape.origin.add(new Vector2(newX, newY));
-            newShape.push(newCell);
-        }
-
-        const possibleRotation = newShape.every(cell => {
-            const partOfShape = this._movingShape.isPartOfShape(cell);
-            return this.pixelMap.isInMap(cell.x, cell.y) &&
-                (!this.pixelMap.isPixelOn(cell.x, cell.y) || partOfShape);
-        });
-
-        if(possibleRotation) {
-            this._movingShape.clearShape(this.pixelMap);
-            this._movingShape.cells = newShape;
-            this._movingShape.fillShape(this.pixelMap);
-        }
     }
 }

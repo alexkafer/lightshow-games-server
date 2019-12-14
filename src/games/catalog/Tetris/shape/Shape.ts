@@ -44,23 +44,23 @@ export class Shape {
         return this._cells.some(shapeCell => shapeCell.x === cell.x && shapeCell.y === cell.y);
     }
 
-    public move(rows: number = 0, columns: number = 0) {
+    public move(x: number = 0, y: number = 0) {
         if(this._origin){
-            this._origin.add(new Vector2(columns, rows))
+            this._origin.add(new Vector2(x, y))
         }
 
-        this.cells.forEach(cell => cell.add(new Vector2(columns, rows)));
+        this.cells.forEach(cell => cell.add(new Vector2(x, y)));
     }
 
     public clearShape(pixelMap: PixelMap): void {
         this.cells.forEach(cell => {
-            pixelMap.clearPixel(cell.x, cell.y);
+            pixelMap.clearPixel(cell.y, cell.x);
         });
     }
 
     public fillShape(pixelMap: PixelMap): void {
         this.cells.forEach(cell => {
-            pixelMap.fillPixel(cell.x, cell.y);
+            pixelMap.fillPixel(cell.y, cell.x);
         });
     }
 }

@@ -1,4 +1,4 @@
-import { FrameUpdater, ChannelPayload } from '../../src/utils/FrameUpdater';
+import FrameUpdater from '../../src/utils/FrameUpdater';
 
 import { expect } from 'chai';
 
@@ -18,21 +18,21 @@ describe('frame updater', function() {
 
   it("Update returns object with only the updated channel", () => {
     const frameUpdater = new FrameUpdater(512);
-    frameUpdater.setChannel(5, 100);
+    frameUpdater.setFinalChannel(5, 100);
 
     let diff = frameUpdater.commitUpdates();
     expect(diff).to.eql({5: 100});
 
-    frameUpdater.setChannel(7, 200);
+    frameUpdater.setFinalChannel(7, 200);
     diff = frameUpdater.commitUpdates();
     expect(diff).to.eql({7: 200});
   })
 
   it("combines multiple updates", () => {
     const frameUpdater = new FrameUpdater(200);
-    frameUpdater.setChannel(5, 100);
-    frameUpdater.setChannel(100, 300);
-    frameUpdater.setChannel(200, 5);
+    frameUpdater.setFinalChannel(5, 100);
+    frameUpdater.setFinalChannel(100, 300);
+    frameUpdater.setFinalChannel(200, 5);
 
     let diff = frameUpdater.commitUpdates();
     expect(diff).to.eql({
@@ -46,13 +46,13 @@ describe('frame updater', function() {
     const frameUpdater = new FrameUpdater(200);
 
     // Negative channel
-    frameUpdater.setChannel(-20, 100);
+    frameUpdater.setFinalChannel(-20, 100);
 
     // Channel sets to 0, which is not an update
-    frameUpdater.setChannel(100, -50);
+    frameUpdater.setFinalChannel(100, -50);
 
     // Channel too high
-    frameUpdater.setChannel(201, 5);
+    frameUpdater.setFinalChannel(201, 5);
 
     let diff = frameUpdater.commitUpdates();
     expect(diff).to.eql({});
@@ -62,13 +62,13 @@ describe('frame updater', function() {
     const frameUpdater = new FrameUpdater(200);
 
     // Negative channel
-    frameUpdater.setChannel(140, 100);
+    frameUpdater.setFinalChannel(140, 100);
 
     // Channel sets to 0, which is not an update
-    frameUpdater.setChannel(140, 200);
+    frameUpdater.setFinalChannel(140, 200);
 
-    frameUpdater.setChannel(70, 200);
-    frameUpdater.setChannel(70, 0);
+    frameUpdater.setFinalChannel(70, 200);
+    frameUpdater.setFinalChannel(70, 0);
 
     // Channel too high
     let diff = frameUpdater.commitUpdates();
@@ -81,7 +81,7 @@ describe('frame updater', function() {
     const frameUpdater = new FrameUpdater(200);
 
     // Negative channel
-    frameUpdater.setChannel(140, 100);
+    frameUpdater.setFinalChannel(140, 100);
 
     let frame = frameUpdater.getFrame(true);
     expect(frame).to.include({140: 100});
@@ -96,7 +96,7 @@ describe('frame updater', function() {
     const frameUpdater = new FrameUpdater(universe);
 
     for (let channel = 0; channel < universe; channel++) {
-      frameUpdater.setChannel(channel + 1, channel);
+      frameUpdater.setFinalChannel(channel + 1, channel);
     }
 
     const frame = frameUpdater.getFrame(true);
@@ -111,7 +111,7 @@ describe('frame updater', function() {
     const size = 190;
     const frameUpdater = new FrameUpdater(size);
 
-    frameUpdater.setChannel(10, 200);
+    frameUpdater.setFinalChannel(10, 200);
     
     // Channel too high
     const diff = frameUpdater.commitUpdates();
@@ -119,7 +119,7 @@ describe('frame updater', function() {
       10: 200
     });
 
-    frameUpdater.setChannel(10, 200);
+    frameUpdater.setFinalChannel(10, 200);
     frameUpdater.resetAndFill(value)
 
     let frame = frameUpdater.getFrame(false);

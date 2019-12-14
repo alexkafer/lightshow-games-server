@@ -1,3 +1,5 @@
+import { IChannelInterface, PIXEL_GRID_START, PIXEL_GRID_COLUMNS, PIXEL_GRID_ROWS } from "../LightManager";
+
 export class PixelMap {
 
     // ------Members------//
@@ -18,10 +20,10 @@ export class PixelMap {
 
     // ------Constructor------//
 
-    constructor(rows: number, columns: number) {
+    constructor() {
         this._map = [];
-        this._rows = rows;
-        this._columns = columns;
+        this._rows = PIXEL_GRID_ROWS;
+        this._columns = PIXEL_GRID_COLUMNS;
     }
 
     // ------Public Methods------//
@@ -60,8 +62,16 @@ export class PixelMap {
         }
     }
 
-    public getPixels(): number[][] {
-        return this._map;
+    public displayPixels(lightshow: IChannelInterface) {
+        for (let column = 0; column < this._columns; column++) {
+            for (let row = 0; row < this._rows; row++) {
+                const channel = PIXEL_GRID_START + 10*column + 2*row;
+                const value = this._map[column][row];
+
+                lightshow.setChannel(channel, value);
+                lightshow.setChannel(channel+1, value);
+            }
+        }
     }
 
     // Tetris
