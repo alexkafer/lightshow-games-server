@@ -35,7 +35,7 @@ export default class Tetris extends Game {
     ];
 
     constructor(lightShow: LightManager) {
-        super(lightShow, "Tetris", ['up', 'down'], 1);
+        super(lightShow, "Tetris", ['up', 'down', 'left', 'right'], 1);
         this.logicTick = 0;
 
         this._shapeFactory = new ShapeFactory();
@@ -85,7 +85,7 @@ export default class Tetris extends Game {
                     }
                 }
 
-                this.logicTick = 5;
+                this.logicTick = 7;
             } else {
                 this.logicTick--;
             }
@@ -111,6 +111,14 @@ export default class Tetris extends Game {
 
         if (message === "down") {
             toMoveRow = 1;
+        }
+
+        if (message === "left") {
+            this.rotateShape();
+        }
+
+        if (message === "right") {
+            this.rotateShape(-1);
         }
 
         if(toMoveRow !== 0){
@@ -192,5 +200,35 @@ export default class Tetris extends Game {
                     this._shapeTypes[randomShapeTypeIndex],
                     new Vector2(1, 2)
                 );
+    }
+
+    private rotateShape(other = 1): void {
+        if(!this._movingShape.origin){
+            return;
+        }
+
+        const newShape = [];
+
+        for(const cell of this._movingShape.cells) {
+            const x = cell.x - this._movingShape.origin.x;
+            const y = cell.y - this._movingShape.origin.y;
+            const newX = other * -y;
+            const newY = other * x;
+
+            const newCell = new Vector2(this._movingShape.origin.x + newX, this._movingShape.origin.y + newY)
+            newShape.push(newCell);
+        }
+
+        const possibleRotation = newShape.every(cell => {
+            const partOfShape = this._movingShape.isPartOfShape(cell);
+            return this.pixelMap.isInMap(cell.y, cell.x) &&
+                (!this.pixelMap.isPixelOn(cell.y, cell.x) || partOfShape);
+        });
+
+        if(possibleRotation) {
+            this._movingShape.clearShape(this.pixelMap);
+            this._movingShape.cells = newShape;
+            this._movingShape.fillShape(this.pixelMap);
+        }
     }
 }

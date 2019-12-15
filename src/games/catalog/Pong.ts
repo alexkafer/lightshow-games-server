@@ -108,7 +108,7 @@ export default class Pong extends Game {
                 }
 
                 this.moveBall();
-                this.logicTick = 8;
+                this.logicTick = 7;
             } else {
                 this.logicTick--;
             }
