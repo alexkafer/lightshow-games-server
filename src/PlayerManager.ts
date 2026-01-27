@@ -1,7 +1,7 @@
 import logger from './utils/Logger';
 
 import EventEmitter from 'events';
-import SocketIO from "socket.io";
+import { Server, Socket} from "socket.io";
 
 import {SlottedQueue} from './utils/SlottedQueue';
 import Player from './games/Player';
@@ -14,8 +14,8 @@ export default class PlayerManager extends EventEmitter {
     private players: Map<string, Player>;
     private queue: SlottedQueue<Player>;
 
-    private io: SocketIO.Server;
-    private admin: SocketIO.Server;
+    private io: Server;
+    private admin: Server;
 
     constructor(gs: GameServer) {
         super();
@@ -24,11 +24,18 @@ export default class PlayerManager extends EventEmitter {
         this.players = new Map();
         this.queue = new SlottedQueue();
 
-        this.io = SocketIO(gs.getServer());
+        this.io = new Server(gs.getServer(), {
+            cors: {
+              origin: "https://192.168.0.10"
+            }
+        });
         this.io.on('connection', this.userConnection.bind(this));
 
-        this.admin = SocketIO(gs.getServer(), {
+        this.admin = new Server(gs.getServer(), {
             path: '/admin',
+            cors: {
+                origin: "https://192.168.0.10"
+            }
         });
         this.admin.on('connection', this.adminConnection.bind(this));
     }
@@ -125,7 +132,7 @@ export default class PlayerManager extends EventEmitter {
         });
     }
 
-    private newVisitor(socket: SocketIO.Socket) {
+    private newVisitor(socket: Socket) {
         const visitor = new Player(socket);
         this.visitors.set(socket.id, visitor);
         logger.http("[CONNECTED] User with id: " + socket.id);
@@ -140,7 +147,7 @@ export default class PlayerManager extends EventEmitter {
         });
     }
 
-    public disconnectUser(socket: SocketIO.Socket) {
+    public disconnectUser(socket: Socket) {
         logger.http("[DISCONNECTED] User with id: " + socket.id);
 
         this.removePlayer(socket.id);

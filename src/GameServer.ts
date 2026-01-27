@@ -4,6 +4,7 @@ import { createServer, Server } from 'https';
 import path from 'path';
 import { readFileSync } from 'fs';
 import logger from './utils/Logger';
+import cors from 'cors';
 
 export default class GameServer {
     private app: Express
@@ -11,6 +12,10 @@ export default class GameServer {
 
     constructor() {
         this.app = express();
+
+        this.app.use(cors({
+           origin: "https://192.168.0.10"
+        }));
 
         const key = readFileSync(process.env.SSL_KEY, 'utf8');
         const cert = readFileSync(process.env.SSL_CERT, 'utf8');

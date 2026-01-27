@@ -2,15 +2,15 @@ import logger from "../../utils/Logger";
 
 import ChannelPayload from "../../utils/ChannelPayload";
 
-import SocketIO from "socket.io";
+import {Server} from "socket.io";
 import GameServer from "../../GameServer";
 
 export default class LightManager  {
 
-    private gallium: SocketIO.Server;
+    private gallium: Server;
 
     constructor(gs: GameServer) {
-        this.gallium = SocketIO(gs.getServer(), {
+        this.gallium = new Server(gs.getServer(), {
             path: '/gallium',
         });
 
